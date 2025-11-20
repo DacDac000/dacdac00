@@ -13,13 +13,16 @@
             overflow: hidden; 
             background-color: #0b0e14; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; 
+            touch-action: none; /* CRÍTICO: Evita zoom y scroll nativo */
             user-select: none;
             transition: background-color 2s; 
+            -webkit-user-select: none; /* Safari */
         }
 
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
 
         #ui-layer {
@@ -45,6 +48,7 @@
             font-size: 24px;
             font-weight: bold;
             text-shadow: 0 0 10px #00ffff;
+            z-index: 5;
         }
         
         #high-score-display {
@@ -60,7 +64,7 @@
             text-transform: uppercase;
         }
 
-        /* Barra Central de Ruleta */
+        /* BARRA SUPERIOR DE RULETA */
         #roulette-timer-container {
             position: absolute;
             top: 20px;
@@ -68,6 +72,8 @@
             transform: translateX(-50%);
             text-align: center;
             width: 300px;
+            max-width: 80%;
+            z-index: 5;
         }
 
         .timer-bar {
@@ -96,25 +102,29 @@
             margin-bottom: 5px;
         }
 
-        /* Indicador de Estado Activo (Debajo de la barra) */
+        /* Indicador de Estado Activo */
         #active-effect-container {
             position: absolute;
-            top: 60px;
+            top: 70px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             display: flex;
-            gap: 20px;
+            gap: 10px;
+            z-index: 5;
+            width: 100%;
+            justify-content: center;
         }
 
         .active-badge {
-            padding: 5px 15px;
+            padding: 5px 10px;
             border-radius: 15px;
             background: rgba(0,0,0,0.6);
             border: 1px solid white;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             animation: pulse 2s infinite;
+            white-space: nowrap;
         }
 
         @keyframes pulse {
@@ -128,7 +138,7 @@
             top: 30%;
             width: 100%;
             text-align: center;
-            font-size: 50px;
+            font-size: 10vw; /* Responsive font size */
             font-weight: 900;
             color: #ffaa00;
             text-shadow: 0 0 20px currentColor;
@@ -140,35 +150,37 @@
         }
 
         .menu-screen {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 40px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
             border-radius: 15px;
             border: 2px solid #00ffff;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
             pointer-events: auto; 
             transition: opacity 0.3s;
-            z-index: 10;
+            z-index: 20; /* Encima de todo */
             max-width: 400px;
-            width: 90%;
+            width: 85%;
         }
 
-        /* --- ESTILOS DE LA RULETA --- */
+        /* RULETA */
         #roulette-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 20;
+            z-index: 30;
             backdrop-filter: blur(5px);
         }
         
         .roulette-container {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 80vw; /* Responsive width */
+            height: 80vw;
+            max-width: 320px;
+            max-height: 320px;
             margin-bottom: 20px;
         }
 
@@ -194,7 +206,7 @@
             border-left: 25px solid transparent;
             border-right: 25px solid transparent;
             border-top: 50px solid #fff;
-            z-index: 25;
+            z-index: 35;
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.8));
         }
 
@@ -224,7 +236,7 @@
         }
 
         #roulette-title {
-            font-size: 40px;
+            font-size: 30px;
             font-weight: 900;
             margin-bottom: 20px;
             text-transform: uppercase;
@@ -233,37 +245,100 @@
             text-shadow: 0 0 15px white;
         }
 
-        h1 { margin: 0 0 10px 0; font-size: 40px; color: #00ffff; text-transform: uppercase; letter-spacing: 3px; }
-        p { font-size: 16px; color: #ccc; margin-bottom: 30px; line-height: 1.5; }
+        h1 { margin: 0 0 10px 0; font-size: 32px; color: #00ffff; text-transform: uppercase; letter-spacing: 3px; }
+        p { font-size: 14px; color: #ccc; margin-bottom: 20px; line-height: 1.4; }
 
         .difficulty-container { display: flex; flex-direction: column; gap: 10px; width: 100%; }
 
         button.menu-btn {
             background: rgba(0, 255, 255, 0.1);
-            color: #00ffff; border: 2px solid #00ffff; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; transition: all 0.2s; width: 100%;
+            color: #00ffff; border: 2px solid #00ffff; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; transition: all 0.2s; width: 100%;
         }
-        button.menu-btn:hover { background: #00ffff; color: #0b0e14; transform: scale(1.02); }
+        button.menu-btn:hover, button.menu-btn:active { background: #00ffff; color: #0b0e14; transform: scale(1.02); }
         button.menu-btn.easy { border-color: #00ff00; color: #00ff00; }
-        button.menu-btn.easy:hover { background: #00ff00; color: #000; }
+        button.menu-btn.easy:hover, button.menu-btn.easy:active { background: #00ff00; color: #000; }
         button.menu-btn.normal { border-color: #00ffff; color: #00ffff; }
-        button.menu-btn.normal:hover { background: #00ffff; color: #000; }
+        button.menu-btn.normal:hover, button.menu-btn.normal:active { background: #00ffff; color: #000; }
         button.menu-btn.hard { border-color: #ff4444; color: #ff4444; }
-        button.menu-btn.hard:hover { background: #ff4444; color: #fff; }
+        button.menu-btn.hard:hover, button.menu-btn.hard:active { background: #ff4444; color: #fff; }
         button.menu-btn.pause-opt { border-color: #ffffff; color: #ffffff; }
-        button.menu-btn.pause-opt:hover { background: #ffffff; color: #000; }
+        button.menu-btn.pause-opt:hover, button.menu-btn.pause-opt:active { background: #ffffff; color: #000; }
 
         .hidden { display: none !important; }
 
-        .mobile-controls { display: none; position: absolute; bottom: 20px; width: 100%; pointer-events: none; }
-        #shoot-btn { pointer-events: auto; width: 80px; height: 80px; background: rgba(255, 68, 68, 0.6); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 50%; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 14px; text-transform: uppercase; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
-        #shoot-btn:active { background: rgba(255, 68, 68, 0.9); transform: scale(0.95); }
-        .control-hint { font-size: 14px; color: rgba(255, 255, 255, 0.5); margin-bottom: 10px; text-shadow: 1px 1px 2px black; }
-        #mobile-pause-btn { display: none; pointer-events: auto; position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; border-radius: 50%; color: white; font-size: 20px; justify-content: center; align-items: center; cursor: pointer; z-index: 100; }
+        /* CONTROLES MÓVILES OPTIMIZADOS */
+        .mobile-controls-layer {
+            display: none; /* Se activa por JS si es táctil */
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* Dejar pasar toques a menos que sea un botón */
+            z-index: 10;
+        }
 
-        @media (hover: none) and (pointer: coarse) {
-            .mobile-controls { display: flex; flex-direction: column; align-items: center; }
-            #score-board { top: 70px; left: 20px; font-size: 18px; } /* Mover score en móvil */
-            #mobile-pause-btn { display: flex; }
+        /* Zona Izquierda (Joystick Virtual) */
+        #joystick-zone {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 50%; height: 100%;
+            pointer-events: auto; /* Captura toques */
+        }
+        
+        /* Feedback visual del joystick (Opcional, círculo sutil) */
+        .joystick-feedback {
+            position: absolute;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Zona Derecha (Botones) */
+        #action-zone {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            pointer-events: auto;
+        }
+
+        #shoot-btn {
+            width: 90px; height: 90px;
+            background: rgba(255, 68, 68, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 16px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #shoot-btn:active { background: rgba(255, 68, 68, 0.9); transform: scale(0.95); }
+        
+        #mobile-pause-btn {
+            pointer-events: auto;
+            position: absolute;
+            top: 20px; right: 20px;
+            width: 45px; height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 50%;
+            color: white;
+            font-size: 22px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Texto de ayuda */
+        .mobile-hint {
+            position: absolute; bottom: 20px; left: 20px;
+            color: rgba(255,255,255,0.4); font-size: 12px;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -273,40 +348,52 @@
 
     <div id="ui-layer">
         <div id="level-indicator"></div>
-        <div id="mobile-pause-btn" onclick="togglePause()">⏸</div>
-
+        
+        <!-- Marcadores y UI Superior -->
         <div id="score-board">
             <div>Puntos: <span id="current-score">0</span></div>
             <div id="high-score-display">Récord: <span id="high-score">0</span></div>
             <div id="current-difficulty"></div>
         </div>
 
-        <!-- BARRA SUPERIOR UNIFICADA DE RULETA -->
         <div id="roulette-timer-container">
             <div id="roulette-status-text">PRÓXIMO GIRO</div>
             <div class="timer-bar"><div id="roulette-timer-fill"></div></div>
         </div>
 
-        <!-- INDICADORES DE EFECTOS ACTIVOS -->
         <div id="active-effect-container">
             <div id="active-powerup" class="active-badge hidden" style="border-color: #00ffff; color: #00ffff;"></div>
             <div id="active-hazard" class="active-badge hidden" style="border-color: #ff4444; color: #ff4444;"></div>
         </div>
 
-        <!-- RULETA OVERLAY -->
+        <!-- Controles Móviles (Se muestran solo si es táctil) -->
+        <div id="mobile-controls" class="mobile-controls-layer">
+            <div id="mobile-pause-btn" onclick="togglePause()">⏸</div>
+            
+            <!-- Zona Joystick Izquierda -->
+            <div id="joystick-zone">
+                <div id="joystick-visual" class="joystick-feedback"></div>
+            </div>
+            <div class="mobile-hint">DESLIZA PARA MOVER</div>
+
+            <!-- Zona Acción Derecha -->
+            <div id="action-zone">
+                <div id="shoot-btn">FUEGO</div>
+            </div>
+        </div>
+
+        <!-- PANTALLAS (Menú, Pausa, GameOver, Ruleta) -->
         <div id="roulette-overlay" class="hidden">
             <div id="roulette-title">¿SUERTE O MUERTE?</div>
             <div class="roulette-container">
                 <div class="roulette-pointer"></div>
-                <div id="roulette-wheel">
-                    <!-- Los segmentos se generan por JS -->
-                </div>
+                <div id="roulette-wheel"></div>
             </div>
         </div>
 
         <div id="start-screen" class="menu-screen">
             <h1>Asteroid Shooter</h1>
-            <p>PC: Flechas + ESPACIO.<br>Móvil: Tocar + Botón.</p>
+            <p><b>PC:</b> Flechas + ESPACIO<br><b>Móvil:</b> Desliza izq. + Botón der.</p>
             <p style="margin-bottom: 10px; font-size: 14px; color: #aaa;">SELECCIONA DIFICULTAD:</p>
             <div class="difficulty-container">
                 <button class="menu-btn easy" onclick="startGame('easy')">FÁCIL</button>
@@ -332,11 +419,6 @@
                 <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
             </div>
         </div>
-        
-        <div class="mobile-controls">
-            <div class="control-hint">Toca lados para mover</div>
-            <div id="shoot-btn">Fuego</div>
-        </div>
     </div>
 
     <script>
@@ -344,6 +426,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
+        // UI Elements
         const currentScoreSpan = document.getElementById('current-score');
         const highScoreSpan = document.getElementById('high-score');
         const difficultyDisplay = document.getElementById('current-difficulty');
@@ -354,14 +437,18 @@
         const rouletteWheel = document.getElementById('roulette-wheel');
         const rouletteTitle = document.getElementById('roulette-title');
         const finalScoreSpan = document.getElementById('final-score');
-        const shootBtn = document.getElementById('shoot-btn');
         const levelIndicator = document.getElementById('level-indicator');
-        
-        const rouletteStatusText = document.getElementById('roulette-status-text');
         const rouletteTimerFill = document.getElementById('roulette-timer-fill');
         const activePowerupBadge = document.getElementById('active-powerup');
         const activeHazardBadge = document.getElementById('active-hazard');
+        
+        // Mobile Controls
+        const mobileControls = document.getElementById('mobile-controls');
+        const joystickZone = document.getElementById('joystick-zone');
+        const joystickVisual = document.getElementById('joystick-visual');
+        const shootBtn = document.getElementById('shoot-btn');
 
+        // Game State
         let gameRunning = false;
         let isPaused = false;
         let isSpinning = false; 
@@ -371,18 +458,16 @@
         let difficultyMultiplier = 1;
         let level = 1; 
 
-        // --- SISTEMA DE RULETA UNIFICADA ---
-        const ROULETTE_INTERVAL = 1800; // 30 segundos a 60fps
-        const EFFECT_DURATION = 300; // 5 segundos de duración
+        const POWERUP_INTERVAL = 1800; 
+        const EFFECT_DURATION = 300; 
         
         let rouletteTimer = 0;
-        
         let currentPowerUp = null; 
         let currentHazard = null;
         let powerUpDurationTimer = 0;
         let hazardDurationTimer = 0;
 
-        // --- CONFIGURACIÓN DE PODERES Y PELIGROS ---
+        // Data Definitions
         const POWER_UP_DATA = { 
             'SHIELD': { name: 'ESCUDO', icon: '🛡️', color: '#00ffff' },
             'RAPID': { name: 'METRALLETA', icon: '⚡', color: '#ffff00' },
@@ -391,7 +476,6 @@
             'PIERCING': { name: 'PERFORANTE', icon: '💠', color: '#00ffaa' }
         };
 
-        // Niveles de Powerups (Qué sale en cada zona)
         const LEVEL_POWERUPS = [
             ['SHIELD', 'RAPID'],            
             ['TRIPLE', 'NUKE'],             
@@ -423,7 +507,116 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // --- HELPER PARA TEMAS DE NIVEL ---
+        // --- INPUT HANDLING ---
+        const input = { left: false, right: false, up: false, down: false, fire: false };
+        
+        // Detect Touch Device to show controls
+        function isTouchDevice() {
+            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+        }
+        if (isTouchDevice()) {
+            mobileControls.style.display = 'block';
+        }
+
+        // Keyboard
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { togglePause(); return; }
+            if (e.key === 'ArrowLeft') input.left = true; if (e.key === 'ArrowRight') input.right = true;
+            if (e.key === 'ArrowUp') input.up = true; if (e.key === 'ArrowDown') input.down = true;
+            if (e.key === ' ') input.fire = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') input.left = false; if (e.key === 'ArrowRight') input.right = false;
+            if (e.key === 'ArrowUp') input.up = false; if (e.key === 'ArrowDown') input.down = false;
+            if (e.key === ' ') input.fire = false;
+        });
+
+        // --- JOYSTICK LOGIC (TOUCH) ---
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let activeTouchId = null;
+
+        joystickZone.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            // Only track the first finger in the zone
+            if (activeTouchId !== null) return;
+            
+            const touch = e.changedTouches[0];
+            activeTouchId = touch.identifier;
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            
+            // Show visual feedback
+            joystickVisual.style.display = 'block';
+            joystickVisual.style.left = touchStartX + 'px';
+            joystickVisual.style.top = touchStartY + 'px';
+        }, {passive: false});
+
+        joystickZone.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (activeTouchId === null) return;
+
+            // Find the active touch
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === activeTouchId) {
+                    const touch = e.changedTouches[i];
+                    const deltaX = touch.clientX - touchStartX;
+                    const deltaY = touch.clientY - touchStartY;
+                    
+                    // Reset inputs
+                    input.left = false; input.right = false; input.up = false; input.down = false;
+
+                    // Threshold for movement (deadzone)
+                    const threshold = 10;
+                    
+                    if (deltaX < -threshold) input.left = true;
+                    if (deltaX > threshold) input.right = true;
+                    if (deltaY < -threshold) input.up = true;
+                    if (deltaY > threshold) input.down = true;
+                    
+                    // Move visual
+                    joystickVisual.style.transform = `translate(calc(-50% + ${Math.max(-40, Math.min(40, deltaX))}px), calc(-50% + ${Math.max(-40, Math.min(40, deltaY))}px))`;
+                    break;
+                }
+            }
+        }, {passive: false});
+
+        const endJoystick = (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === activeTouchId) {
+                    activeTouchId = null;
+                    input.left = false; input.right = false; input.up = false; input.down = false;
+                    joystickVisual.style.display = 'none';
+                    break;
+                }
+            }
+        };
+        joystickZone.addEventListener('touchend', endJoystick);
+        joystickZone.addEventListener('touchcancel', endJoystick);
+
+        // Shoot Button Logic
+        shootBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent affecting movement
+            input.fire = true;
+            shootBtn.style.transform = 'scale(0.9)';
+        }, {passive: false});
+
+        const endShoot = (e) => {
+            e.preventDefault();
+            input.fire = false;
+            shootBtn.style.transform = 'scale(1)';
+        };
+        shootBtn.addEventListener('touchend', endShoot);
+        shootBtn.addEventListener('touchcancel', endShoot);
+        
+        // Mouse support for shoot button (testing on PC)
+        shootBtn.addEventListener('mousedown', () => input.fire = true);
+        shootBtn.addEventListener('mouseup', () => input.fire = false);
+
+
+        // --- GAME LOGIC ---
         function getLevelTheme(lvl) {
             const index = (lvl - 1) % 4;
             switch(index) {
@@ -435,7 +628,6 @@
             return { name: `NIVEL ${lvl}`, bg: "#000", text: "#fff" };
         }
 
-        // --- CLASES DEL JUEGO ---
         class Bullet {
             constructor(x, y, angle = 0, isPiercing = false) {
                 this.x = x; this.y = y; this.width = 4; this.height = 15; 
@@ -612,43 +804,6 @@
         const player = new Player();
         let asteroids = []; let bullets = []; let particles = []; let explosions = [];
         for(let i=0; i<50; i++) particles.push(new Particle(null, null, 'star'));
-        const input = { left: false, right: false, up: false, down: false, fire: false };
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { togglePause(); return; }
-            if (e.key === 'ArrowLeft') input.left = true; if (e.key === 'ArrowRight') input.right = true;
-            if (e.key === 'ArrowUp') input.up = true; if (e.key === 'ArrowDown') input.down = true;
-            if (e.key === ' ') input.fire = true;
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowLeft') input.left = false; if (e.key === 'ArrowRight') input.right = false;
-            if (e.key === 'ArrowUp') input.up = false; if (e.key === 'ArrowDown') input.down = false;
-            if (e.key === ' ') input.fire = false;
-        });
-        function handleTouch(e) {
-            if (isPaused || isSpinning) return; 
-            if (e.target === shootBtn || e.target.id === 'mobile-pause-btn') return;
-            if(e.target.tagName !== 'BUTTON') e.preventDefault();
-            input.left = false; input.right = false; input.up = false; input.down = false;
-            for (let i = 0; i < e.touches.length; i++) {
-                const tX = e.touches[i].clientX; const tY = e.touches[i].clientY;
-                if (e.target !== shootBtn && e.target.id !== 'mobile-pause-btn') {
-                     if (tX < window.innerWidth / 2) input.left = true; else input.right = true;
-                     if (tY < window.innerHeight * 0.3) input.up = true; else if (tY > window.innerHeight * 0.7) input.down = true;
-                }
-            }
-        }
-        window.addEventListener('touchstart', handleTouch, {passive: false});
-        window.addEventListener('touchmove', handleTouch, {passive: false});
-        window.addEventListener('touchend', (e) => {
-            if (e.target === shootBtn || e.target.id === 'mobile-pause-btn') return;
-            e.preventDefault();
-            if (e.touches.length === 0) { input.left = false; input.right = false; input.up = false; input.down = false; } else handleTouch(e);
-        });
-        shootBtn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); input.fire = true; });
-        shootBtn.addEventListener('touchend', (e) => { e.preventDefault(); input.fire = false; });
-        shootBtn.addEventListener('mousedown', () => input.fire = true);
-        shootBtn.addEventListener('mouseup', () => input.fire = false);
 
         function createExplosion(x, y, size = 'large') {
             const count = size === 'large' ? 20 : 5; const type = size === 'large' ? 'explosion' : 'spark';
@@ -667,38 +822,24 @@
              return (dx*dx + dy*dy < circle.radius * circle.radius);
         }
 
-        // --- LÓGICA DE RULETA VISUAL UNIFICADA ---
         function spinRoulette() {
-            isSpinning = true; // Detiene el juego
+            isSpinning = true; 
             rouletteScreen.classList.remove('hidden');
             
-            // 1. Mezclar Powerups del nivel + Peligros
             const levelIndex = (level - 1) % 4;
             const currentLevelPowerups = LEVEL_POWERUPS[levelIndex];
             
-            // Crear lista unificada de items
             let items = [];
-            
-            // Agregar Powerups (Type: 'P')
-            currentLevelPowerups.forEach(key => {
-                items.push({ id: key, type: 'P', ...POWER_UP_DATA[key] });
-            });
-            
-            // Agregar Hazards (Type: 'H')
-            HAZARDS.forEach(key => {
-                items.push({ id: key, type: 'H', ...HAZARD_DATA[key] });
-            });
+            currentLevelPowerups.forEach(key => items.push({ id: key, type: 'P', ...POWER_UP_DATA[key] }));
+            HAZARDS.forEach(key => items.push({ id: key, type: 'H', ...HAZARD_DATA[key] }));
 
-            // 2. Construir la rueda en el DOM
-            rouletteWheel.innerHTML = ''; // Limpiar
+            rouletteWheel.innerHTML = ''; 
             const sliceAngle = 360 / items.length;
             
             let gradient = `conic-gradient(`;
             items.forEach((item, i) => {
                 const start = i * sliceAngle;
                 const end = (i + 1) * sliceAngle;
-                // Alternar colores de fondo para contraste, o usar colores específicos
-                // Usaremos un gris oscuro para hazards y uno más claro para powerups para diferenciarlos en el fondo
                 const color = item.type === 'P' ? '#2a4a4a' : '#4a2a2a'; 
                 gradient += `${color} ${start}deg ${end}deg,`;
                 
@@ -709,7 +850,6 @@
                 const content = document.createElement('div');
                 content.className = 'segment-content';
                 content.innerText = item.icon;
-                // Ajustar color del texto según tipo
                 content.style.color = item.color;
                 content.style.transform = `rotate(90deg)`; 
                 
@@ -720,7 +860,6 @@
             rouletteWheel.style.background = gradient;
             rouletteWheel.style.borderColor = "#fff";
 
-            // 3. Calcular el giro
             const winnerIndex = Math.floor(Math.random() * items.length);
             const winner = items[winnerIndex];
             
@@ -736,48 +875,31 @@
                 rouletteWheel.style.transform = `rotate(${targetRotation}deg)`;
             }, 50);
 
-            // 4. Finalizar
             setTimeout(() => {
                 rouletteScreen.classList.add('hidden');
                 isSpinning = false;
-                
                 if (winner.type === 'P') activatePowerUp(winner.id);
                 else activateHazard(winner.id);
-                
                 if (!isPaused && gameRunning) requestAnimationFrame(gameLoop);
             }, 4500); 
         }
 
         function updateRoulettes() {
-            // Si hay efectos activos, reducimos sus tiempos
             let hasActiveEffect = false;
-
             if (currentPowerUp) {
-                hasActiveEffect = true;
-                powerUpDurationTimer--;
-                // Actualizar UI
-                if (powerUpDurationTimer <= 0) { 
-                    currentPowerUp = null; 
-                    activePowerupBadge.classList.add('hidden');
-                }
+                hasActiveEffect = true; powerUpDurationTimer--;
+                if (powerUpDurationTimer <= 0) { currentPowerUp = null; activePowerupBadge.classList.add('hidden'); }
             }
-
             if (currentHazard) {
-                hasActiveEffect = true;
-                hazardDurationTimer--;
-                // Actualizar UI
-                if (hazardDurationTimer <= 0) { 
-                    currentHazard = null; 
-                    activeHazardBadge.classList.add('hidden');
-                }
+                hasActiveEffect = true; hazardDurationTimer--;
+                if (hazardDurationTimer <= 0) { currentHazard = null; activeHazardBadge.classList.add('hidden'); }
             }
 
-            // La barra de carga de la ruleta siempre avanza
             rouletteTimer++;
-            const pct = (rouletteTimer / ROULETTE_INTERVAL) * 100;
+            const pct = (rouletteTimer / POWERUP_INTERVAL) * 100;
             rouletteTimerFill.style.width = pct + '%';
 
-            if (rouletteTimer >= ROULETTE_INTERVAL) {
+            if (rouletteTimer >= POWERUP_INTERVAL) {
                 rouletteTimer = 0;
                 spinRoulette();
             }
@@ -787,14 +909,11 @@
             currentPowerUp = type; 
             activePowerupBadge.innerText = POWER_UP_DATA[type].icon + " " + POWER_UP_DATA[type].name;
             activePowerupBadge.classList.remove('hidden');
-            
             if (type === 'NUKE') {
                 score += asteroids.length * 50; currentScoreSpan.innerText = score;
                 asteroids.forEach(a => createExplosion(a.x, a.y, 'large')); asteroids = []; 
-                powerUpDurationTimer = 60; // Nuke es instantáneo pero mostramos el badge un poco
-            } else {
-                powerUpDurationTimer = EFFECT_DURATION;
-            }
+                powerUpDurationTimer = 60; 
+            } else powerUpDurationTimer = EFFECT_DURATION;
         }
 
         function activateHazard(type) {
@@ -826,10 +945,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             particles.forEach(p => { p.update(); p.draw(); });
-            
-            // Actualizar lógica unificada de ruleta
             updateRoulettes(); 
-            
             if (isSpinning) return;
 
             player.update(input); player.draw();
@@ -887,13 +1003,8 @@
 
             asteroids = []; bullets = []; explosions = [];
             
-            // Reset Unificado
-            currentPowerUp = null; 
-            currentHazard = null;
-            rouletteTimer = 0;
-            rouletteTimerFill.style.width = '0%';
-            activePowerupBadge.classList.add('hidden');
-            activeHazardBadge.classList.add('hidden');
+            currentPowerUp = null; currentHazard = null; rouletteTimer = 0; rouletteTimerFill.style.width = '0%';
+            activePowerupBadge.classList.add('hidden'); activeHazardBadge.classList.add('hidden');
 
             player.x = canvas.width / 2; player.y = canvas.height - 80; 
             player.width = player.baseWidth; player.height = player.baseHeight; player.speed = player.baseSpeed;
@@ -920,14 +1031,12 @@
         function bgLoop() {
             if (gameRunning && !isPaused && !isSpinning) return; 
             if (isSpinning || isPaused) { return; }
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
             player.y = canvas.height - 80; player.draw();
             requestAnimationFrame(bgLoop);
         }
         bgLoop();
-
     </script>
 </body>
 </html>
