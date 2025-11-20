@@ -64,7 +64,7 @@
             text-transform: uppercase;
         }
 
-        /* NUEVO: Indicador de Nivel Central */
+        /* Indicador de Nivel Central */
         #level-indicator {
             position: absolute;
             top: 20%;
@@ -197,6 +197,10 @@
 
         button.menu-btn.hard { border-color: #ff4444; color: #ff4444; }
         button.menu-btn.hard:hover { background: #ff4444; color: #fff; }
+        
+        /* Estilos especiales para botones de pausa */
+        button.menu-btn.pause-opt { border-color: #ffffff; color: #ffffff; }
+        button.menu-btn.pause-opt:hover { background: #ffffff; color: #000; }
 
         .hidden {
             display: none !important;
@@ -241,11 +245,38 @@
             text-shadow: 1px 1px 2px black;
         }
         
+        /* Botón de Pausa para móvil (arriba izquierda) */
+        #mobile-pause-btn {
+            display: none;
+            pointer-events: auto;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+
         @media (hover: none) and (pointer: coarse) {
             .mobile-controls {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+            }
+            /* Mover la UI de Hazards un poco abajo para dejar sitio al botón de pausa */
+            #hazard-container {
+                top: 70px; 
+            }
+            #mobile-pause-btn {
+                display: flex;
             }
         }
     </style>
@@ -259,6 +290,9 @@
     <div id="ui-layer">
         <!-- Indicador de Nivel -->
         <div id="level-indicator"></div>
+        
+        <!-- Botón Pausa Móvil -->
+        <div id="mobile-pause-btn" onclick="togglePause()">⏸</div>
 
         <!-- Marcador Central -->
         <div id="score-board">
@@ -283,7 +317,7 @@
         <div id="start-screen" class="menu-screen">
             <h1>Asteroid Shooter</h1>
             <p>
-                PC: Flechas para mover, <b>ESPACIO</b> para disparar.<br>
+                PC: Flechas para mover, <b>ESPACIO</b> para disparar, <b>ESC</b> Pausa.<br>
                 Móvil: Toca zonas para mover, botón rojo disparar.
             </p>
             <p style="margin-bottom: 10px; font-size: 14px; color: #aaa;">SELECCIONA DIFICULTAD:</p>
@@ -293,13 +327,24 @@
                 <button class="menu-btn hard" onclick="startGame('hard')">DIFÍCIL</button>
             </div>
         </div>
+        
+        <!-- NUEVO: Pantalla de Pausa -->
+        <div id="pause-screen" class="menu-screen hidden">
+            <h1>PAUSA</h1>
+            <div class="difficulty-container">
+                <button class="menu-btn pause-opt" onclick="togglePause()">VOLVER AL JUEGO</button>
+                <button class="menu-btn pause-opt" onclick="restartMatch()">REINICIAR</button>
+                <button class="menu-btn pause-opt" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
+            </div>
+        </div>
 
         <!-- Pantalla de Game Over -->
         <div id="game-over-screen" class="menu-screen hidden">
             <h1 style="color: #ff4444;">¡Choque!</h1>
             <p>Puntuación final: <span id="final-score">0</span></p>
             <div class="difficulty-container">
-                <button class="menu-btn" onclick="resetGame()">VOLVER AL MENÚ</button>
+                <button class="menu-btn" onclick="restartMatch()">REINTENTAR</button>
+                <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
             </div>
         </div>
         
@@ -321,6 +366,7 @@
         const difficultyDisplay = document.getElementById('current-difficulty');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
+        const pauseScreen = document.getElementById('pause-screen'); // Referencia al menú pausa
         const finalScoreSpan = document.getElementById('final-score');
         const shootBtn = document.getElementById('shoot-btn');
         const levelIndicator = document.getElementById('level-indicator');
@@ -333,6 +379,7 @@
 
         // Variables de estado
         let gameRunning = false;
+        let isPaused = false; // Nuevo estado de pausa
         let score = 0;
         let highScore = localStorage.getItem('asteroidHighScore') || 0; 
         let frameCount = 0;
@@ -704,6 +751,12 @@
         const input = { left: false, right: false, up: false, down: false, fire: false };
 
         window.addEventListener('keydown', (e) => {
+            // TECLA ESCAPE PARA PAUSA
+            if (e.key === 'Escape') {
+                togglePause();
+                return; // No hacer nada más con Escape
+            }
+
             if (e.key === 'ArrowLeft') input.left = true;
             if (e.key === 'ArrowRight') input.right = true;
             if (e.key === 'ArrowUp') input.up = true;
@@ -720,13 +773,20 @@
         });
 
         function handleTouch(e) {
+            // Ignorar toques si está pausado (excepto en el menú que tiene sus propios eventos click)
+            if (isPaused) return;
+            
             if (e.target === shootBtn) return;
+            if (e.target.id === 'mobile-pause-btn') return; // Ignorar botón pausa
             if(e.target.tagName !== 'BUTTON') e.preventDefault();
+            
             input.left = false; input.right = false; input.up = false; input.down = false;
             for (let i = 0; i < e.touches.length; i++) {
                 const tX = e.touches[i].clientX;
                 const tY = e.touches[i].clientY;
-                if (e.target !== shootBtn) {
+                
+                // No controlar si toca botones
+                if (e.target !== shootBtn && e.target.id !== 'mobile-pause-btn') {
                      if (tX < window.innerWidth / 2) input.left = true; else input.right = true;
                      if (tY < window.innerHeight * 0.3) input.up = true; else if (tY > window.innerHeight * 0.7) input.down = true;
                 }
@@ -737,6 +797,7 @@
         window.addEventListener('touchmove', handleTouch, {passive: false});
         window.addEventListener('touchend', (e) => {
             if (e.target === shootBtn) return;
+            if (e.target.id === 'mobile-pause-btn') return;
             e.preventDefault();
             if (e.touches.length === 0) { input.left = false; input.right = false; input.up = false; input.down = false; } 
             else handleTouch(e);
@@ -848,21 +909,41 @@
 
         function levelUp(newLevel) {
             level = newLevel;
-            
-            // Mensaje
             levelIndicator.innerText = "ZONA 2: MAGMA";
             levelIndicator.style.opacity = 1;
             setTimeout(() => { levelIndicator.style.opacity = 0; }, 3000);
-            
-            // Cambiar fondo (body color)
             document.body.style.backgroundColor = "#2a0505";
-            
-            // Efecto visual
             createExplosion(canvas.width/2, canvas.height/2, 'large');
         }
 
+        // --- GESTIÓN DE PAUSA ---
+        function togglePause() {
+            if (!gameRunning) return; // No pausar si no estamos jugando (ej. pantalla título)
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                pauseScreen.classList.remove('hidden');
+            } else {
+                pauseScreen.classList.add('hidden');
+                // Reiniciar el bucle si acabamos de despausar
+                gameLoop();
+            }
+        }
+        
+        function restartMatch() {
+            // Reiniciar partida con la dificultad actual
+            startGame(currentDifficulty);
+        }
+        
+        function returnToMenu() {
+            // Volver al menú principal
+            resetGame();
+        }
+
         function gameLoop() {
-            if (!gameRunning) return;
+            // Si no se está jugando o está en PAUSA, detener el bucle
+            if (!gameRunning || isPaused) return;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -953,6 +1034,7 @@
             difficultyDisplay.innerText = difficultySettings[currentDifficulty].label;
             startScreen.classList.add('hidden');
             gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden'); // Asegurar que pausa está oculta
             
             score = 0;
             frameCount = 0;
@@ -985,13 +1067,18 @@
             player.speed = player.baseSpeed;
 
             gameRunning = true;
+            isPaused = false; // Reset pausa
             gameLoop();
         }
 
         function resetGame() {
+            // Volver al menú principal
             gameRunning = false;
+            isPaused = false;
             gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
+            document.body.style.backgroundColor = "#0b0e14"; // Reset fondo
         }
 
         function gameOver() {
@@ -1011,7 +1098,9 @@
         }
 
         function bgLoop() {
+            // Solo animar el fondo si NO estamos jugando
             if (gameRunning) return; 
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
             player.y = canvas.height - 80; 
