@@ -64,15 +64,15 @@
             text-transform: uppercase;
         }
 
-        /* Barra de Progreso para la Selección */
-        #selection-timer-container {
+        /* --- BARRA DE PODER (MOVIDA A LA DERECHA) --- */
+        #roulette-timer-container {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            width: 300px;
-            max-width: 80%;
+            right: 20px; /* Alineado a la derecha */
+            left: auto;  /* Quitamos el centrado */
+            transform: none; /* Quitamos el centrado */
+            text-align: right; /* Texto alineado a la derecha */
+            width: 220px;
             z-index: 5;
         }
 
@@ -103,13 +103,16 @@
             text-transform: uppercase;
         }
 
-        /* Badge del Powerup Activo */
+        /* Badge del Powerup Activo - Ahora debajo de la barra derecha */
         #active-effect-container {
             position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 60px;
+            right: 20px; /* Alineado a la derecha */
+            left: auto;
+            transform: none;
             z-index: 5;
+            display: flex;
+            justify-content: flex-end;
         }
 
         .active-badge {
@@ -253,15 +256,28 @@
         .hidden { display: none !important; }
 
         .mobile-controls { display: none; position: absolute; bottom: 20px; width: 100%; pointer-events: none; }
-        #shoot-btn { pointer-events: auto; width: 80px; height: 80px; background: rgba(255, 68, 68, 0.6); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 50%; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 14px; text-transform: uppercase; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
-        #shoot-btn:active { background: rgba(255, 68, 68, 0.9); transform: scale(0.95); }
-        .control-hint { font-size: 14px; color: rgba(255, 255, 255, 0.5); margin-bottom: 10px; text-shadow: 1px 1px 2px black; }
+        
+        /* OCULTAMOS EL BOTÓN DE FUEGO */
+        #action-zone {
+            display: none; 
+        }
+
+        #shoot-btn { 
+            display: none; /* Refuerzo para ocultar */
+        }
+        
+        .control-hint { 
+            /* Ocultamos el texto de ayuda "Desliza para mover" si quieres limpieza total */
+            display: none; 
+        }
+
         #mobile-pause-btn { display: none; pointer-events: auto; position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; border-radius: 50%; color: white; font-size: 20px; justify-content: center; align-items: center; cursor: pointer; z-index: 100; }
 
         @media (hover: none) and (pointer: coarse) {
             .mobile-controls { display: flex; flex-direction: column; align-items: center; }
             #score-board { top: 70px; left: 20px; font-size: 18px; } 
-            #mobile-pause-btn { display: flex; }
+            /* Botón pausa un poco más abajo para no solapar con la barra de poder */
+            #mobile-pause-btn { display: flex; top: 80px; right: 20px; width: 35px; height: 35px; font-size: 16px; }
         }
     </style>
 </head>
@@ -278,6 +294,7 @@
             <div id="current-difficulty"></div>
         </div>
 
+        <!-- BARRA MOVIDA A LA DERECHA SUPERIOR -->
         <div id="roulette-timer-container">
             <div id="selection-status-text">PRÓXIMO PODER</div>
             <div class="timer-bar"><div id="selection-timer-fill"></div></div>
@@ -292,6 +309,7 @@
             <div id="joystick-zone">
                 <div id="joystick-visual" class="joystick-feedback"></div>
             </div>
+            <!-- Botón de acción y texto ocultos por CSS -->
             <div class="mobile-hint">DESLIZA PARA MOVER</div>
             <div id="action-zone">
                 <div id="shoot-btn">FUEGO</div>
@@ -308,7 +326,7 @@
 
         <div id="start-screen" class="menu-screen">
             <h1>Asteroid Shooter</h1>
-            <p><b>PC:</b> Flechas + ESPACIO<br><b>Móvil:</b> Desliza izq. + Botón der.</p>
+            <p><b>PC:</b> Flechas + ESPACIO<br><b>Móvil:</b> Desliza para mover.</p>
             <p style="margin-bottom: 10px; font-size: 14px; color: #aaa;">SELECCIONA DIFICULTAD:</p>
             <div class="difficulty-container">
                 <button class="menu-btn easy" onclick="startGame('easy')">FÁCIL</button>
@@ -458,6 +476,9 @@
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
             
+            // Activar disparo automático al tocar el joystick si no hay botón
+            input.fire = true; 
+
             joystickVisual.style.display = 'block';
             joystickVisual.style.left = touchStartX + 'px';
             joystickVisual.style.top = touchStartY + 'px';
@@ -474,6 +495,7 @@
                     const deltaY = touch.clientY - touchStartY;
                     
                     input.left = false; input.right = false; input.up = false; input.down = false;
+                    input.fire = true; // Mantener disparo
 
                     const threshold = 10;
                     
@@ -494,6 +516,7 @@
                 if (e.changedTouches[i].identifier === activeTouchId) {
                     activeTouchId = null;
                     input.left = false; input.right = false; input.up = false; input.down = false;
+                    input.fire = false; // Dejar de disparar
                     joystickVisual.style.display = 'none';
                     break;
                 }
@@ -502,21 +525,7 @@
         joystickZone.addEventListener('touchend', endJoystick);
         joystickZone.addEventListener('touchcancel', endJoystick);
 
-        shootBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            e.stopPropagation(); 
-            input.fire = true;
-            shootBtn.style.transform = 'scale(0.9)';
-        }, {passive: false});
-
-        const endShoot = (e) => {
-            e.preventDefault();
-            input.fire = false;
-            shootBtn.style.transform = 'scale(1)';
-        };
-        shootBtn.addEventListener('touchend', endShoot);
-        shootBtn.addEventListener('touchcancel', endShoot);
-        
+        // El botón de disparo está oculto, pero mantenemos el código por si acaso se reactiva en PC con mouse
         shootBtn.addEventListener('mousedown', () => input.fire = true);
         shootBtn.addEventListener('mouseup', () => input.fire = false);
 
