@@ -5,32 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Esquiva y Destruye Asteroides</title>
     
-    <!-- SOLUCIÓN AL ERROR 404: Icono incrustado (Favicon) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☄️</text></svg>">
 
     <style>
         body {
             margin: 0;
-            overflow: hidden; /* Evita barras de desplazamiento */
-            background-color: #0b0e14; /* Color de fondo oscuro */
+            overflow: hidden; 
+            background-color: #0b0e14; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* Previene zoom/scroll en móviles */
+            touch-action: none; 
             user-select: none;
-            transition: background-color 2s; /* Transición suave de fondo */
+            transition: background-color 2s; 
         }
 
         canvas {
             display: block;
         }
 
-        /* Interfaz de Usuario (UI) superpuesta */
         #ui-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Permite hacer clic a través de la UI */
+            pointer-events: none; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,14 +71,13 @@
             font-size: 40px;
             font-weight: 900;
             color: #ffaa00;
-            text-shadow: 0 0 20px #ff0000;
+            text-shadow: 0 0 20px currentColor;
             opacity: 0;
             transition: opacity 0.5s;
             pointer-events: none;
             letter-spacing: 5px;
         }
 
-        /* VISUALIZADOR DE POWER-UPS (DERECHA) */
         #powerup-container {
             position: absolute;
             top: 20px;
@@ -88,7 +85,6 @@
             text-align: right;
         }
 
-        /* VISUALIZADOR DE PELIGROS (IZQUIERDA) */
         #hazard-container {
             position: absolute;
             top: 20px;
@@ -115,7 +111,7 @@
         #hazard-timer-fill {
             height: 100%;
             width: 0%;
-            background: #ff4444; /* Rojo para peligro */
+            background: #ff4444; 
             transition: width 0.1s linear;
         }
         
@@ -141,7 +137,7 @@
             border-radius: 15px;
             border: 2px solid #00ffff;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            pointer-events: auto; /* Reactiva los clics para los botones */
+            pointer-events: auto; 
             transition: opacity 0.3s;
             z-index: 10;
             max-width: 400px;
@@ -198,7 +194,6 @@
         button.menu-btn.hard { border-color: #ff4444; color: #ff4444; }
         button.menu-btn.hard:hover { background: #ff4444; color: #fff; }
         
-        /* Estilos especiales para botones de pausa */
         button.menu-btn.pause-opt { border-color: #ffffff; color: #ffffff; }
         button.menu-btn.pause-opt:hover { background: #ffffff; color: #000; }
 
@@ -206,7 +201,6 @@
             display: none !important;
         }
 
-        /* Controles para móvil */
         .mobile-controls {
             display: none;
             position: absolute;
@@ -245,7 +239,6 @@
             text-shadow: 1px 1px 2px black;
         }
         
-        /* Botón de Pausa para móvil (arriba izquierda) */
         #mobile-pause-btn {
             display: none;
             pointer-events: auto;
@@ -271,7 +264,6 @@
                 flex-direction: column;
                 align-items: center;
             }
-            /* Mover la UI de Hazards un poco abajo para dejar sitio al botón de pausa */
             #hazard-container {
                 top: 70px; 
             }
@@ -283,37 +275,28 @@
 </head>
 <body>
 
-    <!-- El Canvas donde ocurre la magia -->
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Capa de Interfaz -->
     <div id="ui-layer">
-        <!-- Indicador de Nivel -->
         <div id="level-indicator"></div>
-        
-        <!-- Botón Pausa Móvil -->
         <div id="mobile-pause-btn" onclick="togglePause()">⏸</div>
 
-        <!-- Marcador Central -->
         <div id="score-board">
             <div>Puntos: <span id="current-score">0</span></div>
             <div id="high-score-display">Récord: <span id="high-score">0</span></div>
             <div id="current-difficulty"></div>
         </div>
 
-        <!-- UI de Peligros (Izquierda) -->
         <div id="hazard-container">
             <div id="hazard-text">PELIGRO INMINENTE</div>
             <div class="timer-bar"><div id="hazard-timer-fill"></div></div>
         </div>
 
-        <!-- UI de Power-Ups (Derecha) -->
         <div id="powerup-container">
             <div id="powerup-text">PRÓXIMO PODER</div>
             <div class="timer-bar"><div id="powerup-timer-fill"></div></div>
         </div>
 
-        <!-- Pantalla de Inicio -->
         <div id="start-screen" class="menu-screen">
             <h1>Asteroid Shooter</h1>
             <p>
@@ -328,7 +311,6 @@
             </div>
         </div>
         
-        <!-- NUEVO: Pantalla de Pausa -->
         <div id="pause-screen" class="menu-screen hidden">
             <h1>PAUSA</h1>
             <div class="difficulty-container">
@@ -338,7 +320,6 @@
             </div>
         </div>
 
-        <!-- Pantalla de Game Over -->
         <div id="game-over-screen" class="menu-screen hidden">
             <h1 style="color: #ff4444;">¡Choque!</h1>
             <p>Puntuación final: <span id="final-score">0</span></p>
@@ -348,7 +329,6 @@
             </div>
         </div>
         
-        <!-- Controles Móviles -->
         <div class="mobile-controls">
             <div class="control-hint">Toca lados para mover</div>
             <div id="shoot-btn">Fuego</div>
@@ -360,13 +340,12 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Elementos de la UI
         const currentScoreSpan = document.getElementById('current-score');
         const highScoreSpan = document.getElementById('high-score');
         const difficultyDisplay = document.getElementById('current-difficulty');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
-        const pauseScreen = document.getElementById('pause-screen'); // Referencia al menú pausa
+        const pauseScreen = document.getElementById('pause-screen');
         const finalScoreSpan = document.getElementById('final-score');
         const shootBtn = document.getElementById('shoot-btn');
         const levelIndicator = document.getElementById('level-indicator');
@@ -377,38 +356,29 @@
         const hazardText = document.getElementById('hazard-text');
         const hazardFill = document.getElementById('hazard-timer-fill');
 
-        // Variables de estado
         let gameRunning = false;
-        let isPaused = false; // Nuevo estado de pausa
+        let isPaused = false;
         let score = 0;
         let highScore = localStorage.getItem('asteroidHighScore') || 0; 
         let frameCount = 0;
         let difficultyMultiplier = 1;
-        let level = 1; // 1: Espacio Normal, 2: Zona Magma
+        let level = 1; 
 
-        // --- SISTEMA DE RULETAS ---
-        const POWERUP_INTERVAL = 600; // 10s
-        const HAZARD_INTERVAL = 1200; // 20s
-        const DURATION = 300; // 5s
+        const POWERUP_INTERVAL = 600; 
+        const HAZARD_INTERVAL = 1200; 
+        const DURATION = 300; 
         
-        // PODERES
         let powerUpRouletteTimer = 0;
         let currentPowerUp = null; 
         let powerUpDurationTimer = 0;
         const POWER_UPS = ['SHIELD', 'RAPID', 'TRIPLE', 'NUKE'];
         const POWER_UP_NAMES = { 'SHIELD': '🛡️ ESCUDO', 'RAPID': '⚡ METRALLETA', 'TRIPLE': '🔱 TRIPLE', 'NUKE': '💣 BOMBA' };
 
-        // PELIGROS
         let hazardRouletteTimer = 0;
         let currentHazard = null;
         let hazardDurationTimer = 0;
         const HAZARDS = ['SLOW', 'JAMMED', 'GIANT', 'REVERSE'];
-        const HAZARD_NAMES = { 
-            'SLOW': '🐢 LENTITUD', 
-            'JAMMED': '🚫 ENCASQUILLADA', 
-            'GIANT': '🤡 GIGANTE', 
-            'REVERSE': '🔀 INVERTIDO' 
-        };
+        const HAZARD_NAMES = { 'SLOW': '🐢 LENTITUD', 'JAMMED': '🚫 ENCASQUILLADA', 'GIANT': '🤡 GIGANTE', 'REVERSE': '🔀 INVERTIDO' };
 
         let currentDifficulty = 'normal';
         const difficultySettings = {
@@ -426,91 +396,61 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // --- CLASES ---
+        // --- HELPER PARA TEMAS DE NIVEL ---
+        function getLevelTheme(lvl) {
+            // Rotar temas: 1 (Base), 2 (Magma), 3 (Ciber), 4 (Toxico)
+            // El índice será 0, 1, 2, 3...
+            const index = (lvl - 1) % 4;
+            switch(index) {
+                case 0: // Nivel 1, 5, 9...
+                    return { name: `ZONA ${lvl}: PROFUNDIDAD`, bg: "#0b0e14", text: "#00ffff" };
+                case 1: // Nivel 2, 6, 10...
+                    return { name: `ZONA ${lvl}: MAGMA`, bg: "#2a0505", text: "#ffaa00" };
+                case 2: // Nivel 3, 7, 11...
+                    return { name: `ZONA ${lvl}: CIBER`, bg: "#0a001a", text: "#00ffff" };
+                case 3: // Nivel 4, 8, 12...
+                    return { name: `ZONA ${lvl}: TÓXICA`, bg: "#051a05", text: "#55ff55" };
+            }
+            return { name: `NIVEL ${lvl}`, bg: "#000", text: "#fff" };
+        }
 
         class Bullet {
             constructor(x, y, angle = 0) {
-                this.x = x;
-                this.y = y;
-                this.width = 4;
-                this.height = 15;
-                this.speed = 15;
-                this.angle = angle;
-                this.markedForDeletion = false;
+                this.x = x; this.y = y; this.width = 4; this.height = 15; this.speed = 15; this.angle = angle; this.markedForDeletion = false;
             }
-            
             update() {
                 this.y -= this.speed * Math.cos(this.angle);
                 this.x += this.speed * Math.sin(this.angle);
                 if (this.y < 0 || this.x < 0 || this.x > canvas.width) this.markedForDeletion = true;
             }
-            
             draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle);
-                ctx.fillStyle = '#ff0';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#ff0';
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+                ctx.fillStyle = '#ff0'; ctx.shadowBlur = 10; ctx.shadowColor = '#ff0';
                 ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
-                ctx.shadowBlur = 0;
                 ctx.restore();
             }
         }
 
         class Player {
             constructor() {
-                this.baseWidth = 40;
-                this.baseHeight = 50;
-                this.width = this.baseWidth;
-                this.height = this.baseHeight;
-                this.x = canvas.width / 2;
-                this.y = canvas.height - 80;
-                this.baseSpeed = 7;
-                this.speed = this.baseSpeed;
-                this.color = '#00ffff';
-                this.velX = 0; 
-                this.velY = 0; 
-                this.lastShotTime = 0;
-                this.baseShootDelay = 10; 
+                this.baseWidth = 40; this.baseHeight = 50; this.width = this.baseWidth; this.height = this.baseHeight;
+                this.x = canvas.width / 2; this.y = canvas.height - 80;
+                this.baseSpeed = 7; this.speed = this.baseSpeed; this.color = '#00ffff';
+                this.velX = 0; this.velY = 0; this.lastShotTime = 0; this.baseShootDelay = 10; 
             }
-
             update(input) {
-                // Hazard Logic
-                if (currentHazard === 'GIANT') {
-                    this.width = this.baseWidth * 2;
-                    this.height = this.baseHeight * 2;
-                } else {
-                    this.width = this.baseWidth;
-                    this.height = this.baseHeight;
-                }
+                if (currentHazard === 'GIANT') { this.width = this.baseWidth * 2; this.height = this.baseHeight * 2; } 
+                else { this.width = this.baseWidth; this.height = this.baseHeight; }
+                
+                if (currentHazard === 'SLOW') this.speed = this.baseSpeed * 0.5; else this.speed = this.baseSpeed;
 
-                if (currentHazard === 'SLOW') this.speed = this.baseSpeed * 0.5;
-                else this.speed = this.baseSpeed;
+                let mL = input.left, mR = input.right, mU = input.up, mD = input.down;
+                if (currentHazard === 'REVERSE') { mL = input.right; mR = input.left; mU = input.down; mD = input.up; }
 
-                let moveLeft = input.left;
-                let moveRight = input.right;
-                let moveUp = input.up;
-                let moveDown = input.down;
+                if (mL) this.velX = -this.speed; else if (mR) this.velX = this.speed; else this.velX = 0;
+                if (mU) this.velY = -this.speed; else if (mD) this.velY = this.speed; else this.velY = 0;
 
-                if (currentHazard === 'REVERSE') {
-                    moveLeft = input.right;
-                    moveRight = input.left;
-                    moveUp = input.down;
-                    moveDown = input.up;
-                }
-
-                if (moveLeft) this.velX = -this.speed;
-                else if (moveRight) this.velX = this.speed;
-                else this.velX = 0;
-
-                if (moveUp) this.velY = -this.speed;
-                else if (moveDown) this.velY = this.speed;
-                else this.velY = 0;
-
-                this.x += this.velX;
-                this.y += this.velY;
-
+                this.x += this.velX; this.y += this.velY;
                 if (this.x < this.width/2) this.x = this.width/2;
                 if (this.x > canvas.width - this.width/2) this.x = canvas.width - this.width/2;
                 if (this.y < 100) this.y = 100; 
@@ -518,73 +458,37 @@
                 
                 if (input.fire) this.shoot();
             }
-            
             shoot() {
                 if (currentHazard === 'JAMMED') return;
-                let currentDelay = this.baseShootDelay;
-                if (currentPowerUp === 'RAPID') currentDelay = 3; 
-                if (currentPowerUp === 'TRIPLE') currentDelay = 12;
-
-                if (frameCount - this.lastShotTime > currentDelay) {
+                let cd = this.baseShootDelay;
+                if (currentPowerUp === 'RAPID') cd = 3; else if (currentPowerUp === 'TRIPLE') cd = 12;
+                if (frameCount - this.lastShotTime > cd) {
                     if (currentPowerUp === 'TRIPLE') {
                         bullets.push(new Bullet(this.x, this.y - this.height/2, 0));
                         bullets.push(new Bullet(this.x, this.y - this.height/2, -0.3));
                         bullets.push(new Bullet(this.x, this.y - this.height/2, 0.3));
-                    } else {
-                        bullets.push(new Bullet(this.x, this.y - this.height/2));
-                    }
+                    } else bullets.push(new Bullet(this.x, this.y - this.height/2));
                     this.lastShotTime = frameCount;
                 }
             }
-
             draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.velX * 0.05);
-
-                if (currentHazard) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = '#ff0000';
-                }
-
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.velX * 0.05);
+                if (currentHazard) { ctx.shadowBlur = 20; ctx.shadowColor = '#ff0000'; }
                 if (currentPowerUp === 'SHIELD') {
-                    ctx.beginPath();
-                    ctx.arc(0, 0, this.width, 0, Math.PI * 2);
+                    ctx.beginPath(); ctx.arc(0, 0, this.width, 0, Math.PI * 2);
                     ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 + Math.sin(frameCount * 0.2) * 0.3})`;
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-                    ctx.fillStyle = 'rgba(0, 255, 255, 0.1)';
-                    ctx.fill();
+                    ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = 'rgba(0, 255, 255, 0.1)'; ctx.fill();
                 }
-                
-                if (currentHazard === 'JAMMED') {
-                    ctx.fillStyle = 'red';
-                    ctx.font = "20px Arial";
-                    ctx.fillText("NO SHOOT", -40, -this.height/2 - 10);
-                }
-
-                ctx.beginPath();
-                ctx.moveTo(0, -this.height/2);
-                ctx.lineTo(this.width/2, this.height/2);
-                ctx.lineTo(0, this.height/2 - 10);
-                ctx.lineTo(-this.width/2, this.height/2);
-                ctx.closePath();
-                
+                if (currentHazard === 'JAMMED') { ctx.fillStyle = 'red'; ctx.font = "20px Arial"; ctx.fillText("NO SHOOT", -40, -this.height/2 - 10); }
+                ctx.beginPath(); ctx.moveTo(0, -this.height/2); ctx.lineTo(this.width/2, this.height/2);
+                ctx.lineTo(0, this.height/2 - 10); ctx.lineTo(-this.width/2, this.height/2); ctx.closePath();
                 ctx.fillStyle = currentHazard ? '#ffaaaa' : this.color; 
-                if (!currentHazard) {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = this.color;
-                }
+                if (!currentHazard) { ctx.shadowBlur = 15; ctx.shadowColor = this.color; }
                 ctx.fill();
-
                 if (Math.random() > 0.5) {
-                    ctx.beginPath();
-                    ctx.moveTo(-5, this.height/2 - 5);
-                    ctx.lineTo(5, this.height/2 - 5);
+                    ctx.beginPath(); ctx.moveTo(-5, this.height/2 - 5); ctx.lineTo(5, this.height/2 - 5);
                     ctx.lineTo(0, this.height/2 + 15 + Math.random() * 10);
-                    ctx.fillStyle = '#ffaa00';
-                    ctx.shadowColor = '#ff4400';
-                    ctx.fill();
+                    ctx.fillStyle = '#ffaa00'; ctx.shadowColor = '#ff4400'; ctx.fill();
                 }
                 ctx.restore();
             }
@@ -595,97 +499,67 @@
                 const settings = difficultySettings[currentDifficulty];
                 const sizeBonus = Math.min((difficultyMultiplier - 1) * 10, 50); 
                 this.radius = Math.random() * (20 + sizeBonus) + 15;
-                
-                this.velX = 0;
-                this.velY = 0;
+                this.velX = 0; this.velY = 0;
                 
                 if (currentDifficulty === 'hard' && Math.random() > 0.3) {
                     const side = Math.random();
                     const speed = (Math.random() * 2 + 1.5) * difficultyMultiplier * settings.speedFactor;
-                    
-                    if (side < 0.5) {
-                        this.x = -this.radius;
-                        this.y = Math.random() * (canvas.height * 0.6); 
-                        this.velX = speed;
-                        this.velY = speed * 0.3; 
-                    } else {
-                        this.x = canvas.width + this.radius;
-                        this.y = Math.random() * (canvas.height * 0.6);
-                        this.velX = -speed;
-                        this.velY = speed * 0.3;
-                    }
+                    if (side < 0.5) { this.x = -this.radius; this.y = Math.random() * (canvas.height * 0.6); this.velX = speed; this.velY = speed * 0.3; } 
+                    else { this.x = canvas.width + this.radius; this.y = Math.random() * (canvas.height * 0.6); this.velX = -speed; this.velY = speed * 0.3; }
                 } else {
-                    this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
-                    this.y = -100; 
+                    this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius; this.y = -100; 
                     this.velY = (Math.random() * 2 + 1.5) * difficultyMultiplier * settings.speedFactor; 
                     this.velX = (Math.random() - 0.5) * 1.5;
                 }
-
-                this.rotation = 0;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.1;
-                this.maxHealth = Math.floor(this.radius / 8) + 1;
-                this.health = this.maxHealth;
-                this.hitFlash = 0; 
-                this.vertices = [];
-                const numVertices = 7;
+                this.rotation = 0; this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+                this.maxHealth = Math.floor(this.radius / 8) + 1; this.health = this.maxHealth; this.hitFlash = 0; 
+                this.vertices = []; const numVertices = 7;
                 for (let i = 0; i < numVertices; i++) {
                     const angle = (i / numVertices) * Math.PI * 2;
                     const r = this.radius * (0.8 + Math.random() * 0.4);
                     this.vertices.push({x: Math.cos(angle) * r, y: Math.sin(angle) * r});
                 }
             }
-            update() {
-                this.x += this.velX;
-                this.y += this.velY;
-                this.rotation += this.rotationSpeed;
-                if (this.hitFlash > 0) this.hitFlash--;
-            }
+            update() { this.x += this.velX; this.y += this.velY; this.rotation += this.rotationSpeed; if (this.hitFlash > 0) this.hitFlash--; }
             draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.beginPath();
-                ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
-                for (let i = 1; i < this.vertices.length; i++) ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
-                ctx.closePath();
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                ctx.beginPath(); ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
+                for (let i = 1; i < this.vertices.length; i++) ctx.lineTo(this.vertices[i].x, this.vertices[i].y); ctx.closePath();
                 
-                if (this.hitFlash > 0) {
-                    ctx.fillStyle = '#fff'; 
-                } else {
-                    // Color según nivel
-                    if (level === 1) {
-                        // Rocas grises normales
-                        const g = 100 + (this.health / this.maxHealth) * 100;
-                        ctx.fillStyle = `rgb(${g/2}, ${g/2}, ${g/2})`;
-                        ctx.strokeStyle = '#aaa';
-                    } else {
-                        // ZONA MAGMA: Rocas Rojas/Negras
-                        const r = 80 + (this.health / this.maxHealth) * 100;
-                        ctx.fillStyle = `rgb(${r}, 0, 0)`;
-                        ctx.strokeStyle = '#ffaa00'; // Borde Naranja fuego
-                        ctx.shadowBlur = 10;
-                        ctx.shadowColor = '#ff4400';
+                if (this.hitFlash > 0) ctx.fillStyle = '#fff'; 
+                else {
+                    const themeIdx = (level - 1) % 4;
+                    const ratio = this.health / this.maxHealth;
+                    
+                    if (themeIdx === 0) { // Normal
+                        const g = 100 + ratio * 100; ctx.fillStyle = `rgb(${g/2}, ${g/2}, ${g/2})`; ctx.strokeStyle = '#aaa';
+                    } else if (themeIdx === 1) { // Magma
+                        const r = 80 + ratio * 100; ctx.fillStyle = `rgb(${r}, 0, 0)`; ctx.strokeStyle = '#ffaa00';
+                        ctx.shadowBlur = 10; ctx.shadowColor = '#ff4400';
+                    } else if (themeIdx === 2) { // Ciber
+                        const b = 100 + ratio * 155; ctx.fillStyle = `rgb(${50}, 0, ${b/1.5})`; ctx.strokeStyle = '#00ffff';
+                        ctx.shadowBlur = 10; ctx.shadowColor = '#ff00ff';
+                    } else if (themeIdx === 3) { // Toxic
+                         const g = 50 + ratio * 100; ctx.fillStyle = `rgb(0, ${g}, 0)`; ctx.strokeStyle = '#adff2f';
+                         ctx.shadowBlur = 10; ctx.shadowColor = '#00ff00';
                     }
                 }
                 
-                ctx.lineWidth = 2;
-                ctx.fill();
-                ctx.stroke();
-                ctx.shadowBlur = 0; // Reset shadow
+                ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
 
-                // Grietas de magma
-                if (level === 2 && this.hitFlash === 0) {
-                     ctx.beginPath();
-                     ctx.moveTo(0, 0);
-                     ctx.lineTo(this.radius/2, this.radius/2);
-                     ctx.strokeStyle = '#ffaa00';
-                     ctx.lineWidth = 1;
-                     ctx.stroke();
+                // Efectos extra por nivel
+                const themeIdx = (level - 1) % 4;
+                if (themeIdx === 1 && this.hitFlash === 0) { // Grietas magma
+                     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(this.radius/2, this.radius/2);
+                     ctx.strokeStyle = '#ffaa00'; ctx.lineWidth = 1; ctx.stroke();
+                }
+                if (themeIdx === 2 && this.hitFlash === 0) { // Rejilla Ciber
+                     ctx.beginPath(); ctx.moveTo(-this.radius/2, 0); ctx.lineTo(this.radius/2, 0);
+                     ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 1; ctx.stroke();
                 }
 
-                // Barra de vida
                 if(this.health < this.maxHealth) {
-                     ctx.fillStyle = level === 2 ? '#ffff00' : 'red';
+                     ctx.fillStyle = themeIdx === 0 ? 'red' : '#fff';
                      ctx.fillRect(-this.radius/2, -this.radius - 10, this.radius * (this.health/this.maxHealth), 4);
                 }
                 ctx.restore();
@@ -700,31 +574,28 @@
                 if (type === 'explosion' || type === 'spark') {
                     const angle = Math.random() * Math.PI * 2;
                     const speed = type === 'explosion' ? Math.random() * 5 : Math.random() * 8;
-                    this.velX = Math.cos(angle) * speed;
-                    this.velY = Math.sin(angle) * speed;
+                    this.velX = Math.cos(angle) * speed; this.velY = Math.sin(angle) * speed;
                     this.life = 1.0;
                     this.decay = type === 'explosion' ? (Math.random() * 0.03 + 0.01) : 0.08;
                     this.size = type === 'explosion' ? (Math.random() * 3 + 1) : 2;
                     this.color = type === 'explosion' ? `hsl(${Math.random()*60 + 10}, 100%, 50%)` : '#ffffaa'; 
                 } else {
-                    this.velX = 0;
-                    this.velY = Math.random() * 2 + 0.5;
+                    this.velX = 0; this.velY = Math.random() * 2 + 0.5;
                     this.size = Math.random() * 2;
                     this.baseColor = Math.random() > 0.8 ? '#aaa' : 'white';
                     this.color = this.baseColor;
                 }
             }
             update() {
-                this.x += this.velX;
-                this.y += this.velY;
+                this.x += this.velX; this.y += this.velY;
                 if (this.type !== 'star') this.life -= this.decay;
                 else {
-                    // Actualizar color si cambia nivel
-                    if (level === 2) {
-                         this.color = Math.random() > 0.5 ? '#ff4444' : '#ffaa00';
-                    } else {
-                         this.color = this.baseColor;
-                    }
+                    // Color estrellas según nivel
+                    const themeIdx = (level - 1) % 4;
+                    if (themeIdx === 1) this.color = Math.random() > 0.5 ? '#ff4444' : '#ffaa00'; // Magma
+                    else if (themeIdx === 2) this.color = Math.random() > 0.5 ? '#ff00ff' : '#00ffff'; // Ciber
+                    else if (themeIdx === 3) this.color = Math.random() > 0.5 ? '#00ff00' : '#adff2f'; // Toxic
+                    else this.color = this.baseColor; // Normal
 
                     if (this.y > canvas.height) { this.y = 0; this.x = Math.random() * canvas.width; }
                 }
@@ -733,74 +604,47 @@
                 if (this.type !== 'star' && this.life <= 0) return;
                 ctx.globalAlpha = this.type !== 'star' ? this.life : 0.6;
                 ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1.0;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill(); ctx.globalAlpha = 1.0;
             }
         }
 
         const player = new Player();
-        let asteroids = [];
-        let bullets = [];
-        let particles = [];
-        let explosions = [];
-
+        let asteroids = []; let bullets = []; let particles = []; let explosions = [];
         for(let i=0; i<50; i++) particles.push(new Particle(null, null, 'star'));
-
         const input = { left: false, right: false, up: false, down: false, fire: false };
 
         window.addEventListener('keydown', (e) => {
-            // TECLA ESCAPE PARA PAUSA
-            if (e.key === 'Escape') {
-                togglePause();
-                return; // No hacer nada más con Escape
-            }
-
-            if (e.key === 'ArrowLeft') input.left = true;
-            if (e.key === 'ArrowRight') input.right = true;
-            if (e.key === 'ArrowUp') input.up = true;
-            if (e.key === 'ArrowDown') input.down = true;
+            if (e.key === 'Escape') { togglePause(); return; }
+            if (e.key === 'ArrowLeft') input.left = true; if (e.key === 'ArrowRight') input.right = true;
+            if (e.key === 'ArrowUp') input.up = true; if (e.key === 'ArrowDown') input.down = true;
             if (e.key === ' ') input.fire = true;
         });
-
         window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowLeft') input.left = false;
-            if (e.key === 'ArrowRight') input.right = false;
-            if (e.key === 'ArrowUp') input.up = false;
-            if (e.key === 'ArrowDown') input.down = false;
+            if (e.key === 'ArrowLeft') input.left = false; if (e.key === 'ArrowRight') input.right = false;
+            if (e.key === 'ArrowUp') input.up = false; if (e.key === 'ArrowDown') input.down = false;
             if (e.key === ' ') input.fire = false;
         });
 
         function handleTouch(e) {
-            // Ignorar toques si está pausado (excepto en el menú que tiene sus propios eventos click)
             if (isPaused) return;
-            
-            if (e.target === shootBtn) return;
-            if (e.target.id === 'mobile-pause-btn') return; // Ignorar botón pausa
+            if (e.target === shootBtn || e.target.id === 'mobile-pause-btn') return;
             if(e.target.tagName !== 'BUTTON') e.preventDefault();
-            
             input.left = false; input.right = false; input.up = false; input.down = false;
             for (let i = 0; i < e.touches.length; i++) {
-                const tX = e.touches[i].clientX;
-                const tY = e.touches[i].clientY;
-                
-                // No controlar si toca botones
+                const tX = e.touches[i].clientX; const tY = e.touches[i].clientY;
                 if (e.target !== shootBtn && e.target.id !== 'mobile-pause-btn') {
                      if (tX < window.innerWidth / 2) input.left = true; else input.right = true;
                      if (tY < window.innerHeight * 0.3) input.up = true; else if (tY > window.innerHeight * 0.7) input.down = true;
                 }
             }
         }
-
         window.addEventListener('touchstart', handleTouch, {passive: false});
         window.addEventListener('touchmove', handleTouch, {passive: false});
         window.addEventListener('touchend', (e) => {
-            if (e.target === shootBtn) return;
-            if (e.target.id === 'mobile-pause-btn') return;
+            if (e.target === shootBtn || e.target.id === 'mobile-pause-btn') return;
             e.preventDefault();
-            if (e.touches.length === 0) { input.left = false; input.right = false; input.up = false; input.down = false; } 
-            else handleTouch(e);
+            if (e.touches.length === 0) { input.left = false; input.right = false; input.up = false; input.down = false; } else handleTouch(e);
         });
         
         shootBtn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); input.fire = true; });
@@ -809,166 +653,103 @@
         shootBtn.addEventListener('mouseup', () => input.fire = false);
 
         function createExplosion(x, y, size = 'large') {
-            const count = size === 'large' ? 20 : 5;
-            const type = size === 'large' ? 'explosion' : 'spark';
+            const count = size === 'large' ? 20 : 5; const type = size === 'large' ? 'explosion' : 'spark';
             for(let i=0; i<count; i++) explosions.push(new Particle(x, y, type));
         }
 
         function detectCollision(circle, rect) {
-            const distX = Math.abs(circle.x - rect.x);
-            const distY = Math.abs(circle.y - rect.y);
+            const distX = Math.abs(circle.x - rect.x); const distY = Math.abs(circle.y - rect.y);
             if (distX > (rect.width/2 + circle.radius)) return false;
             if (distY > (rect.height/2 + circle.radius)) return false;
-            if (distX <= (rect.width/2)) return true; 
-            if (distY <= (rect.height/2)) return true;
-            const dx = distX - rect.width/2;
-            const dy = distY - rect.height/2;
+            if (distX <= (rect.width/2)) return true; if (distY <= (rect.height/2)) return true;
+            const dx = distX - rect.width/2; const dy = distY - rect.height/2;
             return (dx*dx + dy*dy <= (circle.radius*circle.radius));
         }
-        
         function detectBulletCollision(bullet, circle) {
-             const dx = bullet.x - circle.x;
-             const dy = bullet.y - circle.y;
+             const dx = bullet.x - circle.x; const dy = bullet.y - circle.y;
              return (dx*dx + dy*dy < circle.radius * circle.radius);
         }
 
         function updateRoulettes() {
-            // PowerUps
             if (currentPowerUp) {
-                powerUpDurationTimer--;
-                powerUpText.style.color = '#ff00ff';
-                powerUpText.style.textShadow = '0 0 10px #ff00ff';
-                const pct = (powerUpDurationTimer / DURATION) * 100;
-                powerUpFill.style.width = pct + '%';
-                if (powerUpDurationTimer <= 0) {
-                    currentPowerUp = null;
-                    powerUpText.innerText = "PRÓXIMO PODER";
-                    powerUpRouletteTimer = 0; 
-                }
+                powerUpDurationTimer--; powerUpText.style.color = '#ff00ff'; powerUpText.style.textShadow = '0 0 10px #ff00ff';
+                const pct = (powerUpDurationTimer / DURATION) * 100; powerUpFill.style.width = pct + '%';
+                if (powerUpDurationTimer <= 0) { currentPowerUp = null; powerUpText.innerText = "PRÓXIMO PODER"; powerUpRouletteTimer = 0; }
             } else {
-                powerUpRouletteTimer++;
-                const pct = (powerUpRouletteTimer / POWERUP_INTERVAL) * 100;
-                powerUpFill.style.width = pct + '%';
+                powerUpRouletteTimer++; const pct = (powerUpRouletteTimer / POWERUP_INTERVAL) * 100; powerUpFill.style.width = pct + '%';
                 if (powerUpRouletteTimer >= POWERUP_INTERVAL) triggerPowerUp();
             }
-            // Hazards
             if (currentHazard) {
-                hazardDurationTimer--;
-                hazardText.style.color = '#ff4444';
-                hazardText.style.textShadow = '0 0 10px #ff0000';
-                const pct = (hazardDurationTimer / DURATION) * 100;
-                hazardFill.style.width = pct + '%';
-                if (hazardDurationTimer <= 0) {
-                    currentHazard = null;
-                    hazardText.innerText = "PELIGRO INMINENTE";
-                    hazardRouletteTimer = 0;
-                }
+                hazardDurationTimer--; hazardText.style.color = '#ff4444'; hazardText.style.textShadow = '0 0 10px #ff0000';
+                const pct = (hazardDurationTimer / DURATION) * 100; hazardFill.style.width = pct + '%';
+                if (hazardDurationTimer <= 0) { currentHazard = null; hazardText.innerText = "PELIGRO INMINENTE"; hazardRouletteTimer = 0; }
             } else {
-                hazardRouletteTimer++;
-                const pct = (hazardRouletteTimer / HAZARD_INTERVAL) * 100;
-                hazardFill.style.width = pct + '%';
+                hazardRouletteTimer++; const pct = (hazardRouletteTimer / HAZARD_INTERVAL) * 100; hazardFill.style.width = pct + '%';
                 if (hazardRouletteTimer >= HAZARD_INTERVAL) triggerHazard();
             }
         }
 
         function triggerPowerUp() {
-            powerUpText.innerText = "GIRANDO...";
-            powerUpText.style.color = '#fff';
+            powerUpText.innerText = "GIRANDO..."; powerUpText.style.color = '#fff';
             const randIndex = Math.floor(Math.random() * POWER_UPS.length);
-            setTimeout(() => activatePowerUp(POWER_UPS[randIndex]), 500);
-            powerUpRouletteTimer = 0;
+            setTimeout(() => activatePowerUp(POWER_UPS[randIndex]), 500); powerUpRouletteTimer = 0;
         }
-
         function activatePowerUp(type) {
-            currentPowerUp = type;
-            powerUpText.innerText = POWER_UP_NAMES[type];
+            currentPowerUp = type; powerUpText.innerText = POWER_UP_NAMES[type];
             if (type === 'NUKE') {
-                score += asteroids.length * 50;
-                currentScoreSpan.innerText = score;
-                asteroids.forEach(a => createExplosion(a.x, a.y, 'large'));
-                asteroids = [];
-                powerUpDurationTimer = 60; 
-            } else {
-                powerUpDurationTimer = DURATION;
-            }
+                score += asteroids.length * 50; currentScoreSpan.innerText = score;
+                asteroids.forEach(a => createExplosion(a.x, a.y, 'large')); asteroids = []; powerUpDurationTimer = 60; 
+            } else powerUpDurationTimer = DURATION;
         }
-
         function triggerHazard() {
-            hazardText.innerText = "GIRANDO...";
-            hazardText.style.color = '#fff';
+            hazardText.innerText = "GIRANDO..."; hazardText.style.color = '#fff';
             const randIndex = Math.floor(Math.random() * HAZARDS.length);
-            setTimeout(() => activateHazard(HAZARDS[randIndex]), 500);
-            hazardRouletteTimer = 0;
+            setTimeout(() => activateHazard(HAZARDS[randIndex]), 500); hazardRouletteTimer = 0;
         }
-
         function activateHazard(type) {
-            currentHazard = type;
-            hazardText.innerText = HAZARD_NAMES[type];
-            hazardDurationTimer = DURATION; 
+            currentHazard = type; hazardText.innerText = HAZARD_NAMES[type]; hazardDurationTimer = DURATION; 
         }
 
         function levelUp(newLevel) {
             level = newLevel;
-            levelIndicator.innerText = "ZONA 2: MAGMA";
+            const theme = getLevelTheme(level);
+            
+            levelIndicator.innerText = theme.name;
+            levelIndicator.style.color = theme.text;
             levelIndicator.style.opacity = 1;
             setTimeout(() => { levelIndicator.style.opacity = 0; }, 3000);
-            document.body.style.backgroundColor = "#2a0505";
+            
+            document.body.style.backgroundColor = theme.bg;
             createExplosion(canvas.width/2, canvas.height/2, 'large');
         }
 
-        // --- GESTIÓN DE PAUSA ---
         function togglePause() {
-            if (!gameRunning) return; // No pausar si no estamos jugando (ej. pantalla título)
-            
+            if (!gameRunning) return; 
             isPaused = !isPaused;
-            
-            if (isPaused) {
-                pauseScreen.classList.remove('hidden');
-            } else {
-                pauseScreen.classList.add('hidden');
-                // Reiniciar el bucle si acabamos de despausar
-                gameLoop();
-            }
+            if (isPaused) pauseScreen.classList.remove('hidden'); else { pauseScreen.classList.add('hidden'); gameLoop(); }
         }
-        
-        function restartMatch() {
-            // Reiniciar partida con la dificultad actual
-            startGame(currentDifficulty);
-        }
-        
-        function returnToMenu() {
-            // Volver al menú principal
-            resetGame();
-        }
+        function restartMatch() { startGame(currentDifficulty); }
+        function returnToMenu() { resetGame(); }
 
         function gameLoop() {
-            // Si no se está jugando o está en PAUSA, detener el bucle
             if (!gameRunning || isPaused) return;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             particles.forEach(p => { p.update(); p.draw(); });
-            updateRoulettes();
-            player.update(input);
-            player.draw();
+            updateRoulettes(); player.update(input); player.draw();
             
-            bullets.forEach((b, index) => {
-                b.update();
-                b.draw();
-                if(b.markedForDeletion) bullets.splice(index, 1);
-            });
+            bullets.forEach((b, index) => { b.update(); b.draw(); if(b.markedForDeletion) bullets.splice(index, 1); });
 
             frameCount++;
             if (frameCount % 200 === 0) difficultyMultiplier += 0.1;
 
-            // LEVEL CHECK
-            if (score >= 1000 && level === 1) {
-                levelUp(2);
+            // LEVEL CHECK (Cada 3000 puntos)
+            if (score >= level * 3000) {
+                levelUp(level + 1);
             }
 
             const settings = difficultySettings[currentDifficulty];
             const spawnRate = Math.max(5, Math.floor(settings.spawnRateBase - (difficultyMultiplier * 4))); 
-            
             if (frameCount % spawnRate === 0) {
                 asteroids.push(new Asteroid());
                 const chance = currentDifficulty === 'hard' ? 0.5 : 0.7; 
@@ -976,139 +757,79 @@
             }
 
             for (let i = asteroids.length - 1; i >= 0; i--) {
-                const a = asteroids[i];
-                a.update();
-                a.draw();
-                let asteroidDestroyed = false;
+                const a = asteroids[i]; a.update(); a.draw(); let asteroidDestroyed = false;
 
                 if (detectCollision(a, player)) {
                     if (currentPowerUp === 'SHIELD') {
-                        createExplosion(a.x, a.y, 'small');
-                        asteroidDestroyed = true;
-                        score += 20; 
-                    } else {
-                        gameOver();
-                        createExplosion(player.x, player.y, 'large');
-                    }
+                        createExplosion(a.x, a.y, 'small'); asteroidDestroyed = true; score += 20; 
+                    } else { gameOver(); createExplosion(player.x, player.y, 'large'); }
                 }
                 
                 for (let j = bullets.length - 1; j >= 0; j--) {
                     const b = bullets[j];
                     if (detectBulletCollision(b, a)) {
-                        bullets.splice(j, 1); 
-                        a.health--;
-                        a.hitFlash = 3; 
-                        createExplosion(b.x, b.y, 'small'); 
+                        bullets.splice(j, 1); a.health--; a.hitFlash = 3; createExplosion(b.x, b.y, 'small'); 
                         if (a.health <= 0) {
                             asteroidDestroyed = true;
-                            const sizePoints = Math.floor(a.radius);
-                            score += 20 + sizePoints; 
+                            const sizePoints = Math.floor(a.radius); score += 20 + sizePoints; 
                             createExplosion(a.x, a.y, 'large');
                         }
                         break; 
                     }
                 }
 
-                if (asteroidDestroyed) {
-                    asteroids.splice(i, 1);
-                    currentScoreSpan.innerText = score;
-                } else if (a.y - a.radius > canvas.height || a.x < -100 || a.x > canvas.width + 100) {
-                    asteroids.splice(i, 1);
-                    score += 10; 
-                    currentScoreSpan.innerText = score;
+                if (asteroidDestroyed) { asteroids.splice(i, 1); currentScoreSpan.innerText = score; } 
+                else if (a.y - a.radius > canvas.height || a.x < -100 || a.x > canvas.width + 100) {
+                    asteroids.splice(i, 1); score += 10; currentScoreSpan.innerText = score;
                 }
             }
-
             for (let i = explosions.length - 1; i >= 0; i--) {
-                const e = explosions[i];
-                e.update();
-                e.draw();
-                if (e.life <= 0) explosions.splice(i, 1);
+                const e = explosions[i]; e.update(); e.draw(); if (e.life <= 0) explosions.splice(i, 1);
             }
-
             requestAnimationFrame(gameLoop);
         }
 
         function startGame(difficulty) {
             currentDifficulty = difficulty;
             difficultyDisplay.innerText = difficultySettings[currentDifficulty].label;
-            startScreen.classList.add('hidden');
-            gameOverScreen.classList.add('hidden');
-            pauseScreen.classList.add('hidden'); // Asegurar que pausa está oculta
+            startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden'); pauseScreen.classList.add('hidden');
             
-            score = 0;
-            frameCount = 0;
-            currentScoreSpan.innerText = "0";
-            difficultyMultiplier = 1;
-            
-            // Reset Level
-            level = 1;
-            document.body.style.backgroundColor = "#0b0e14";
-            levelIndicator.style.opacity = 0;
+            score = 0; frameCount = 0; currentScoreSpan.innerText = "0"; difficultyMultiplier = 1;
+            level = 1; document.body.style.backgroundColor = "#0b0e14"; levelIndicator.style.opacity = 0;
 
-            asteroids = [];
-            bullets = [];
-            explosions = [];
-            
-            currentPowerUp = null;
-            powerUpRouletteTimer = 0;
-            powerUpText.innerText = "PRÓXIMO PODER";
-            powerUpFill.style.width = '0%';
+            asteroids = []; bullets = []; explosions = [];
+            currentPowerUp = null; powerUpRouletteTimer = 0; powerUpText.innerText = "PRÓXIMO PODER"; powerUpFill.style.width = '0%';
+            currentHazard = null; hazardRouletteTimer = 0; hazardText.innerText = "PELIGRO INMINENTE"; hazardFill.style.width = '0%';
 
-            currentHazard = null;
-            hazardRouletteTimer = 0; 
-            hazardText.innerText = "PELIGRO INMINENTE";
-            hazardFill.style.width = '0%';
+            player.x = canvas.width / 2; player.y = canvas.height - 80; 
+            player.width = player.baseWidth; player.height = player.baseHeight; player.speed = player.baseSpeed;
 
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 80; 
-            player.width = player.baseWidth;
-            player.height = player.baseHeight;
-            player.speed = player.baseSpeed;
-
-            gameRunning = true;
-            isPaused = false; // Reset pausa
-            gameLoop();
+            gameRunning = true; isPaused = false; gameLoop();
         }
 
         function resetGame() {
-            // Volver al menú principal
-            gameRunning = false;
-            isPaused = false;
-            gameOverScreen.classList.add('hidden');
-            pauseScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            document.body.style.backgroundColor = "#0b0e14"; // Reset fondo
+            gameRunning = false; isPaused = false;
+            gameOverScreen.classList.add('hidden'); pauseScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden'); document.body.style.backgroundColor = "#0b0e14";
         }
 
         function gameOver() {
-            gameRunning = false;
-            finalScoreSpan.innerText = score;
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('asteroidHighScore', highScore);
-                highScoreSpan.innerText = highScore;
-            }
+            gameRunning = false; finalScoreSpan.innerText = score;
+            if (score > highScore) { highScore = score; localStorage.setItem('asteroidHighScore', highScore); highScoreSpan.innerText = highScore; }
             gameOverScreen.classList.remove('hidden');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => p.draw());
-            asteroids.forEach(a => a.draw());
-            createExplosion(player.x, player.y, 'large');
-            explosions.forEach(e => { e.update(); e.draw(); });
+            particles.forEach(p => p.draw()); asteroids.forEach(a => a.draw());
+            createExplosion(player.x, player.y, 'large'); explosions.forEach(e => { e.update(); e.draw(); });
         }
 
         function bgLoop() {
-            // Solo animar el fondo si NO estamos jugando
             if (gameRunning) return; 
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
-            player.y = canvas.height - 80; 
-            player.draw();
+            player.y = canvas.height - 80; player.draw();
             requestAnimationFrame(bgLoop);
         }
         bgLoop();
-
     </script>
 </body>
 </html>
