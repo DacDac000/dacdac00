@@ -40,13 +40,11 @@
         #score-board {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
+            text-align: left;
             font-size: 24px;
             font-weight: bold;
             text-shadow: 0 0 10px #00ffff;
-            text-align: center;
-            width: 200px;
         }
         
         #high-score-display {
@@ -62,12 +60,75 @@
             text-transform: uppercase;
         }
 
+        /* Barra Central de Ruleta */
+        #roulette-timer-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 300px;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            margin-bottom: 5px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        #roulette-timer-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            transition: width 0.1s linear;
+        }
+        
+        #roulette-status-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+            min-height: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* Indicador de Estado Activo (Debajo de la barra) */
+        #active-effect-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            display: flex;
+            gap: 20px;
+        }
+
+        .active-badge {
+            padding: 5px 15px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid white;
+            font-size: 14px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         #level-indicator {
             position: absolute;
-            top: 20%;
+            top: 30%;
             width: 100%;
             text-align: center;
-            font-size: 40px;
+            font-size: 50px;
             font-weight: 900;
             color: #ffaa00;
             text-shadow: 0 0 20px currentColor;
@@ -75,40 +136,8 @@
             transition: opacity 0.5s;
             pointer-events: none;
             letter-spacing: 5px;
+            z-index: 5;
         }
-
-        /* BARRAS DE TIEMPO (Solo informativas ahora) */
-        #powerup-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-align: right;
-        }
-
-        #hazard-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            text-align: left;
-        }
-
-        .timer-bar {
-            width: 150px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            margin-bottom: 5px;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        
-        #powerup-timer-fill { height: 100%; width: 0%; background: #ff00ff; transition: width 0.1s linear; }
-        #hazard-timer-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.1s linear; }
-        
-        #powerup-text, #hazard-text {
-            font-size: 18px; font-weight: bold; min-height: 24px;
-        }
-        #powerup-text { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
-        #hazard-text { color: #ff4444; text-shadow: 0 0 10px #ff0000; }
 
         .menu-screen {
             background: rgba(0, 0, 0, 0.85);
@@ -138,8 +167,8 @@
         
         .roulette-container {
             position: relative;
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
             margin-bottom: 20px;
         }
 
@@ -147,27 +176,26 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 5px solid white;
+            border: 8px solid #444;
             background: #333;
             position: relative;
-            transition: transform 4s cubic-bezier(0.1, 0.9, 0.2, 1); /* Efecto de frenado suave */
+            transition: transform 4s cubic-bezier(0.1, 0.9, 0.2, 1);
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        /* Puntero de la ruleta */
         .roulette-pointer {
             position: absolute;
-            top: -20px;
+            top: -25px;
             left: 50%;
             transform: translateX(-50%);
             width: 0; 
             height: 0; 
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #fff;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 50px solid #fff;
             z-index: 25;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.8));
         }
 
         .wheel-segment {
@@ -180,7 +208,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Clip path para hacer la forma de quesito */
             clip-path: polygon(0% 0%, 100% 0%, 0% 100%); 
             box-sizing: border-box;
         }
@@ -188,20 +215,22 @@
         .segment-content {
             position: absolute;
             transform-origin: center;
-            font-size: 30px;
+            font-size: 32px;
             font-weight: bold;
             color: white;
-            text-shadow: 1px 1px 2px black;
-            left: -35px; /* Ajuste manual para centrar en el segmento */
-            top: 40px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+            left: -40px; 
+            top: 50px;
         }
 
         #roulette-title {
-            font-size: 32px;
+            font-size: 40px;
             font-weight: 900;
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            color: white;
+            text-shadow: 0 0 15px white;
         }
 
         h1 { margin: 0 0 10px 0; font-size: 40px; color: #00ffff; text-transform: uppercase; letter-spacing: 3px; }
@@ -229,11 +258,11 @@
         #shoot-btn { pointer-events: auto; width: 80px; height: 80px; background: rgba(255, 68, 68, 0.6); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 50%; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 14px; text-transform: uppercase; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
         #shoot-btn:active { background: rgba(255, 68, 68, 0.9); transform: scale(0.95); }
         .control-hint { font-size: 14px; color: rgba(255, 255, 255, 0.5); margin-bottom: 10px; text-shadow: 1px 1px 2px black; }
-        #mobile-pause-btn { display: none; pointer-events: auto; position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; border-radius: 50%; color: white; font-size: 20px; justify-content: center; align-items: center; cursor: pointer; z-index: 100; }
+        #mobile-pause-btn { display: none; pointer-events: auto; position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; border-radius: 50%; color: white; font-size: 20px; justify-content: center; align-items: center; cursor: pointer; z-index: 100; }
 
         @media (hover: none) and (pointer: coarse) {
             .mobile-controls { display: flex; flex-direction: column; align-items: center; }
-            #hazard-container { top: 70px; }
+            #score-board { top: 70px; left: 20px; font-size: 18px; } /* Mover score en móvil */
             #mobile-pause-btn { display: flex; }
         }
     </style>
@@ -252,19 +281,21 @@
             <div id="current-difficulty"></div>
         </div>
 
-        <div id="hazard-container">
-            <div id="hazard-text">PELIGRO INMINENTE</div>
-            <div class="timer-bar"><div id="hazard-timer-fill"></div></div>
+        <!-- BARRA SUPERIOR UNIFICADA DE RULETA -->
+        <div id="roulette-timer-container">
+            <div id="roulette-status-text">PRÓXIMO GIRO</div>
+            <div class="timer-bar"><div id="roulette-timer-fill"></div></div>
         </div>
 
-        <div id="powerup-container">
-            <div id="powerup-text">PRÓXIMO PODER</div>
-            <div class="timer-bar"><div id="powerup-timer-fill"></div></div>
+        <!-- INDICADORES DE EFECTOS ACTIVOS -->
+        <div id="active-effect-container">
+            <div id="active-powerup" class="active-badge hidden" style="border-color: #00ffff; color: #00ffff;"></div>
+            <div id="active-hazard" class="active-badge hidden" style="border-color: #ff4444; color: #ff4444;"></div>
         </div>
 
         <!-- RULETA OVERLAY -->
         <div id="roulette-overlay" class="hidden">
-            <div id="roulette-title">¡SUERTE!</div>
+            <div id="roulette-title">¿SUERTE O MUERTE?</div>
             <div class="roulette-container">
                 <div class="roulette-pointer"></div>
                 <div id="roulette-wheel">
@@ -326,29 +357,32 @@
         const shootBtn = document.getElementById('shoot-btn');
         const levelIndicator = document.getElementById('level-indicator');
         
-        const powerUpText = document.getElementById('powerup-text');
-        const powerUpFill = document.getElementById('powerup-timer-fill');
-        const hazardText = document.getElementById('hazard-text');
-        const hazardFill = document.getElementById('hazard-timer-fill');
+        const rouletteStatusText = document.getElementById('roulette-status-text');
+        const rouletteTimerFill = document.getElementById('roulette-timer-fill');
+        const activePowerupBadge = document.getElementById('active-powerup');
+        const activeHazardBadge = document.getElementById('active-hazard');
 
         let gameRunning = false;
         let isPaused = false;
-        let isSpinning = false; // Nueva bandera para pausar por ruleta
+        let isSpinning = false; 
         let score = 0;
         let highScore = localStorage.getItem('asteroidHighScore') || 0; 
         let frameCount = 0;
         let difficultyMultiplier = 1;
         let level = 1; 
 
-        const POWERUP_INTERVAL = 600; 
-        const HAZARD_INTERVAL = 1200; 
-        const DURATION = 300; 
+        // --- SISTEMA DE RULETA UNIFICADA ---
+        const ROULETTE_INTERVAL = 1800; // 30 segundos a 60fps
+        const EFFECT_DURATION = 300; // 5 segundos de duración
         
-        let powerUpRouletteTimer = 0;
+        let rouletteTimer = 0;
+        
         let currentPowerUp = null; 
+        let currentHazard = null;
         let powerUpDurationTimer = 0;
+        let hazardDurationTimer = 0;
 
-        // --- CONFIGURACIÓN DE PODERES ---
+        // --- CONFIGURACIÓN DE PODERES Y PELIGROS ---
         const POWER_UP_DATA = { 
             'SHIELD': { name: 'ESCUDO', icon: '🛡️', color: '#00ffff' },
             'RAPID': { name: 'METRALLETA', icon: '⚡', color: '#ffff00' },
@@ -357,6 +391,7 @@
             'PIERCING': { name: 'PERFORANTE', icon: '💠', color: '#00ffaa' }
         };
 
+        // Niveles de Powerups (Qué sale en cada zona)
         const LEVEL_POWERUPS = [
             ['SHIELD', 'RAPID'],            
             ['TRIPLE', 'NUKE'],             
@@ -364,9 +399,6 @@
             ['SHIELD', 'TRIPLE', 'NUKE']    
         ];
 
-        let hazardRouletteTimer = 0;
-        let currentHazard = null;
-        let hazardDurationTimer = 0;
         const HAZARD_DATA = { 
             'SLOW': { name: 'LENTITUD', icon: '🐢', color: '#88ff88' },
             'JAMMED': { name: 'ENCASQUILLADA', icon: '🚫', color: '#888888' },
@@ -403,7 +435,7 @@
             return { name: `NIVEL ${lvl}`, bg: "#000", text: "#fff" };
         }
 
-        // --- CLASES DEL JUEGO --- (Sin cambios mayores)
+        // --- CLASES DEL JUEGO ---
         class Bullet {
             constructor(x, y, angle = 0, isPiercing = false) {
                 this.x = x; this.y = y; this.width = 4; this.height = 15; 
@@ -594,7 +626,7 @@
             if (e.key === ' ') input.fire = false;
         });
         function handleTouch(e) {
-            if (isPaused || isSpinning) return; // No control if stopped
+            if (isPaused || isSpinning) return; 
             if (e.target === shootBtn || e.target.id === 'mobile-pause-btn') return;
             if(e.target.tagName !== 'BUTTON') e.preventDefault();
             input.left = false; input.right = false; input.up = false; input.down = false;
@@ -635,54 +667,50 @@
              return (dx*dx + dy*dy < circle.radius * circle.radius);
         }
 
-        // --- LÓGICA DE RULETA VISUAL ---
-        function spinRoulette(type) {
+        // --- LÓGICA DE RULETA VISUAL UNIFICADA ---
+        function spinRoulette() {
             isSpinning = true; // Detiene el juego
             rouletteScreen.classList.remove('hidden');
             
-            // 1. Definir items posibles
+            // 1. Mezclar Powerups del nivel + Peligros
+            const levelIndex = (level - 1) % 4;
+            const currentLevelPowerups = LEVEL_POWERUPS[levelIndex];
+            
+            // Crear lista unificada de items
             let items = [];
-            let title = "";
-            let colorBase = "";
-
-            if (type === 'POWERUP') {
-                const levelIndex = (level - 1) % 4;
-                const keys = LEVEL_POWERUPS[levelIndex];
-                items = keys.map(k => ({ id: k, ...POWER_UP_DATA[k] }));
-                title = "¡SUERTE!";
-                colorBase = "#00ffff";
-            } else {
-                items = HAZARDS.map(k => ({ id: k, ...HAZARD_DATA[k] }));
-                title = "¡CUIDADO!";
-                colorBase = "#ff4444";
-            }
-
-            rouletteTitle.innerText = title;
-            rouletteTitle.style.color = colorBase;
+            
+            // Agregar Powerups (Type: 'P')
+            currentLevelPowerups.forEach(key => {
+                items.push({ id: key, type: 'P', ...POWER_UP_DATA[key] });
+            });
+            
+            // Agregar Hazards (Type: 'H')
+            HAZARDS.forEach(key => {
+                items.push({ id: key, type: 'H', ...HAZARD_DATA[key] });
+            });
 
             // 2. Construir la rueda en el DOM
             rouletteWheel.innerHTML = ''; // Limpiar
             const sliceAngle = 360 / items.length;
             
-            // Usar conic-gradient para el fondo de colores
             let gradient = `conic-gradient(`;
             items.forEach((item, i) => {
                 const start = i * sliceAngle;
                 const end = (i + 1) * sliceAngle;
-                const color = i % 2 === 0 ? '#444' : '#222'; // Alternar fondo
+                // Alternar colores de fondo para contraste, o usar colores específicos
+                // Usaremos un gris oscuro para hazards y uno más claro para powerups para diferenciarlos en el fondo
+                const color = item.type === 'P' ? '#2a4a4a' : '#4a2a2a'; 
                 gradient += `${color} ${start}deg ${end}deg,`;
                 
-                // Crear segmento de texto
                 const seg = document.createElement('div');
                 seg.className = 'wheel-segment';
-                // Rotar el contenedor del segmento para que apunte al centro
-                // Ajustamos + (sliceAngle/2) para centrar el contenido en el gajo
                 seg.style.transform = `rotate(${start + sliceAngle/2}deg)`;
                 
                 const content = document.createElement('div');
                 content.className = 'segment-content';
                 content.innerText = item.icon;
-                // Contrarrotar el texto para que se lea bien (opcional, aquí lo dejamos radial)
+                // Ajustar color del texto según tipo
+                content.style.color = item.color;
                 content.style.transform = `rotate(90deg)`; 
                 
                 seg.appendChild(content);
@@ -690,25 +718,19 @@
             });
             gradient = gradient.slice(0, -1) + ')';
             rouletteWheel.style.background = gradient;
-            rouletteWheel.style.borderColor = colorBase;
+            rouletteWheel.style.borderColor = "#fff";
 
             // 3. Calcular el giro
-            // Queremos que caiga en un item aleatorio.
             const winnerIndex = Math.floor(Math.random() * items.length);
             const winner = items[winnerIndex];
             
-            // El puntero está arriba (0 grados).
-            // Para que el segmento 'i' quede arriba, la rueda debe rotar -(i * sliceAngle + sliceAngle/2).
-            // Añadimos muchas vueltas (360 * 5).
             const segmentCenter = (winnerIndex * sliceAngle) + (sliceAngle / 2);
             const targetRotation = 360 * 5 + (360 - segmentCenter); 
             
-            // Resetear rotación y forzar reflow
             rouletteWheel.style.transition = 'none';
             rouletteWheel.style.transform = 'rotate(0deg)';
-            rouletteWheel.offsetHeight; // Force reflow
+            rouletteWheel.offsetHeight; 
 
-            // Animar
             setTimeout(() => {
                 rouletteWheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.9, 0.2, 1)';
                 rouletteWheel.style.transform = `rotate(${targetRotation}deg)`;
@@ -716,52 +738,70 @@
 
             // 4. Finalizar
             setTimeout(() => {
-                // Ocultar y Aplicar
                 rouletteScreen.classList.add('hidden');
                 isSpinning = false;
                 
-                if (type === 'POWERUP') activatePowerUp(winner.id);
+                if (winner.type === 'P') activatePowerUp(winner.id);
                 else activateHazard(winner.id);
                 
-                // Reanudar loop si no estaba pausado manualmente
                 if (!isPaused && gameRunning) requestAnimationFrame(gameLoop);
-            }, 4500); // 4s de giro + 0.5s de lectura
+            }, 4500); 
         }
 
         function updateRoulettes() {
+            // Si hay efectos activos, reducimos sus tiempos
+            let hasActiveEffect = false;
+
             if (currentPowerUp) {
-                powerUpDurationTimer--; powerUpText.style.color = '#ff00ff'; powerUpText.style.textShadow = '0 0 10px #ff00ff';
-                const pct = (powerUpDurationTimer / DURATION) * 100; powerUpFill.style.width = pct + '%';
-                if (powerUpDurationTimer <= 0) { currentPowerUp = null; powerUpText.innerText = "PRÓXIMO PODER"; powerUpRouletteTimer = 0; }
-            } else {
-                powerUpRouletteTimer++; const pct = (powerUpRouletteTimer / POWERUP_INTERVAL) * 100; powerUpFill.style.width = pct + '%';
-                if (powerUpRouletteTimer >= POWERUP_INTERVAL) {
-                    powerUpRouletteTimer = 0; // Reset antes de girar
-                    spinRoulette('POWERUP');
+                hasActiveEffect = true;
+                powerUpDurationTimer--;
+                // Actualizar UI
+                if (powerUpDurationTimer <= 0) { 
+                    currentPowerUp = null; 
+                    activePowerupBadge.classList.add('hidden');
                 }
             }
+
             if (currentHazard) {
-                hazardDurationTimer--; hazardText.style.color = '#ff4444'; hazardText.style.textShadow = '0 0 10px #ff0000';
-                const pct = (hazardDurationTimer / DURATION) * 100; hazardFill.style.width = pct + '%';
-                if (hazardDurationTimer <= 0) { currentHazard = null; hazardText.innerText = "PELIGRO INMINENTE"; hazardRouletteTimer = 0; }
-            } else {
-                hazardRouletteTimer++; const pct = (hazardRouletteTimer / HAZARD_INTERVAL) * 100; hazardFill.style.width = pct + '%';
-                if (hazardRouletteTimer >= HAZARD_INTERVAL) {
-                    hazardRouletteTimer = 0; // Reset antes de girar
-                    spinRoulette('HAZARD');
+                hasActiveEffect = true;
+                hazardDurationTimer--;
+                // Actualizar UI
+                if (hazardDurationTimer <= 0) { 
+                    currentHazard = null; 
+                    activeHazardBadge.classList.add('hidden');
                 }
+            }
+
+            // La barra de carga de la ruleta siempre avanza
+            rouletteTimer++;
+            const pct = (rouletteTimer / ROULETTE_INTERVAL) * 100;
+            rouletteTimerFill.style.width = pct + '%';
+
+            if (rouletteTimer >= ROULETTE_INTERVAL) {
+                rouletteTimer = 0;
+                spinRoulette();
             }
         }
 
         function activatePowerUp(type) {
-            currentPowerUp = type; powerUpText.innerText = POWER_UP_DATA[type].name;
+            currentPowerUp = type; 
+            activePowerupBadge.innerText = POWER_UP_DATA[type].icon + " " + POWER_UP_DATA[type].name;
+            activePowerupBadge.classList.remove('hidden');
+            
             if (type === 'NUKE') {
                 score += asteroids.length * 50; currentScoreSpan.innerText = score;
-                asteroids.forEach(a => createExplosion(a.x, a.y, 'large')); asteroids = []; powerUpDurationTimer = 60; 
-            } else powerUpDurationTimer = DURATION;
+                asteroids.forEach(a => createExplosion(a.x, a.y, 'large')); asteroids = []; 
+                powerUpDurationTimer = 60; // Nuke es instantáneo pero mostramos el badge un poco
+            } else {
+                powerUpDurationTimer = EFFECT_DURATION;
+            }
         }
+
         function activateHazard(type) {
-            currentHazard = type; hazardText.innerText = HAZARD_DATA[type].name; hazardDurationTimer = DURATION; 
+            currentHazard = type; 
+            activeHazardBadge.innerText = HAZARD_DATA[type].icon + " " + HAZARD_DATA[type].name;
+            activeHazardBadge.classList.remove('hidden');
+            hazardDurationTimer = EFFECT_DURATION; 
         }
 
         function levelUp(newLevel) {
@@ -773,7 +813,7 @@
         }
 
         function togglePause() {
-            if (!gameRunning || isSpinning) return; // No pausar manual si ya está girando ruleta
+            if (!gameRunning || isSpinning) return; 
             isPaused = !isPaused;
             if (isPaused) pauseScreen.classList.remove('hidden'); else { pauseScreen.classList.add('hidden'); gameLoop(); }
         }
@@ -781,15 +821,15 @@
         function returnToMenu() { resetGame(); }
 
         function gameLoop() {
-            if (!gameRunning || isPaused || isSpinning) return; // Detener loop si está girando
+            if (!gameRunning || isPaused || isSpinning) return; 
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             particles.forEach(p => { p.update(); p.draw(); });
+            
+            // Actualizar lógica unificada de ruleta
             updateRoulettes(); 
             
-            // Si la ruleta se activó dentro de updateRoulettes(), isSpinning será true.
-            // Debemos salir inmediatamente para no actualizar el juego un frame más.
             if (isSpinning) return;
 
             player.update(input); player.draw();
@@ -846,8 +886,14 @@
             level = 1; document.body.style.backgroundColor = "#0b0e14"; levelIndicator.style.opacity = 0;
 
             asteroids = []; bullets = []; explosions = [];
-            currentPowerUp = null; powerUpRouletteTimer = 0; powerUpText.innerText = "PRÓXIMO PODER"; powerUpFill.style.width = '0%';
-            currentHazard = null; hazardRouletteTimer = 0; hazardText.innerText = "PELIGRO INMINENTE"; hazardFill.style.width = '0%';
+            
+            // Reset Unificado
+            currentPowerUp = null; 
+            currentHazard = null;
+            rouletteTimer = 0;
+            rouletteTimerFill.style.width = '0%';
+            activePowerupBadge.classList.add('hidden');
+            activeHazardBadge.classList.add('hidden');
 
             player.x = canvas.width / 2; player.y = canvas.height - 80; 
             player.width = player.baseWidth; player.height = player.baseHeight; player.speed = player.baseSpeed;
@@ -873,12 +919,7 @@
 
         function bgLoop() {
             if (gameRunning && !isPaused && !isSpinning) return; 
-            // Si está en pausa o ruleta, seguimos renderizando fondo estático o animado levemente
-            // Pero para simplificar y que se vea la ruleta sobre el juego congelado:
-            if (isSpinning || isPaused) {
-                // No limpiar, dejar el frame congelado de fondo
-                return; 
-            }
+            if (isSpinning || isPaused) { return; }
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
@@ -886,6 +927,7 @@
             requestAnimationFrame(bgLoop);
         }
         bgLoop();
+
     </script>
 </body>
 </html>
